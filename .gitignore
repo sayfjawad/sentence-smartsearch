@@ -1,0 +1,7 @@
+# IntelliJ project files
+.idea/
+*.iml
+# Maven build dir
+target/
+.gradle/
+/.idea/compiler.xml
