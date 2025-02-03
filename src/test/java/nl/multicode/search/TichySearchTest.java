@@ -24,7 +24,7 @@ class TichySearchTest {
      */
     @Test
     void testAlbertHein() {
-        TichySearch similarSentenceSearch = new TichySearch();
+        TichySearch search = new TichySearch();
 
         String searchSentence = "Albert Heijn";
         List<String> sentences = Arrays.asList(
@@ -38,8 +38,13 @@ class TichySearchTest {
 
         // The threshold value is chosen based on the expected Tichy distance.
         double threshold = 2;
-        List<String> similarSentences = similarSentenceSearch.findSimilarSentences(searchSentence, sentences, threshold);
+        List<String> similarSentences = search.findSimilarSentences(searchSentence, sentences, threshold);
 
+        assertThat(similarSentences)
+                .contains("Alber Heijn")
+                .hasSize(1);
+
+        similarSentences = search.search(searchSentence, sentences);
         assertThat(similarSentences)
                 .contains("Alber Heijn")
                 .hasSize(1);

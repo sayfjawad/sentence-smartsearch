@@ -31,5 +31,12 @@ class DoubleMetaphoneSearchTest {
                 .contains("Alber Heijn")
                 .contains("Albert Heijn store")
                 .hasSize(3);
+
+        similarSentences = search.search(searchSentence, sentences);
+        assertThat(similarSentences)
+                .contains("Albört H ijn")
+                .contains("Alber Heijn")
+                .contains("Albert Heijn store")
+                .hasSize(3);
     }
 }

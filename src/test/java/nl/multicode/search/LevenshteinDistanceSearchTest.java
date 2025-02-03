@@ -25,7 +25,7 @@ class LevenshteinDistanceSearchTest {
      */
     @Test
     void testAlbertHein() {
-        LevenshteinDistanceSearch similarSentenceSearch = new LevenshteinDistanceSearch(new LevenshteinDistance());
+        LevenshteinDistanceSearch search = new LevenshteinDistanceSearch(new LevenshteinDistance());
 
         String searchSentence = "Albert Heijn";
         List<String> sentences = Arrays.asList(
@@ -38,8 +38,14 @@ class LevenshteinDistanceSearchTest {
         );
 
         int threshold = 3;
-        List<String> similarSentences = similarSentenceSearch.findSimilarSentences(searchSentence, sentences, threshold);
+        List<String> similarSentences = search.findSimilarSentences(searchSentence, sentences, threshold);
 
+        assertThat(similarSentences)
+                .contains("Albört H ijn")
+                .contains("Alber Heijn")
+                .hasSize(2);
+
+        similarSentences = search.search(searchSentence, sentences);
         assertThat(similarSentences)
                 .contains("Albört H ijn")
                 .contains("Alber Heijn")

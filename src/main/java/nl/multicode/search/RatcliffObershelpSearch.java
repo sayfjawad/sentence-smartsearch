@@ -1,5 +1,6 @@
 package nl.multicode.search;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import nl.multicode.match.RatcliffObershelp;
 
 import java.util.List;
@@ -8,7 +9,8 @@ import java.util.stream.Collectors;
 /**
  * RatcliffObershelpDistanceSearch uses Ratcliff-Obershelp similarity to find similar sentences.
  */
-public class RatcliffObershelpSearch {
+@ApplicationScoped
+public class RatcliffObershelpSearch implements Search {
     private final RatcliffObershelp ratcliffObershelp;
 
     /**
@@ -30,5 +32,10 @@ public class RatcliffObershelpSearch {
         return sentences.stream()
                 .filter(sentence -> ratcliffObershelp.sim(searchSentence, sentence) >= threshold)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> search(String searchTerm, List<String> sentences) {
+        return findSimilarSentences(searchTerm, sentences, 0.6);
     }
 }

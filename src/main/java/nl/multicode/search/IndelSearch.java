@@ -1,5 +1,6 @@
 package nl.multicode.search;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import nl.multicode.match.Indel;
 
 import java.util.List;
@@ -8,7 +9,8 @@ import java.util.stream.Collectors;
 /**
  * Zoekt vergelijkbare zinnen op basis van de Indel Distance.
  */
-public class IndelSearch {
+@ApplicationScoped
+public class IndelSearch implements Search {
 
     private final Indel indelDistance;
 
@@ -33,5 +35,10 @@ public class IndelSearch {
         return sentences.stream()
                 .filter(sentence -> indelDistance.compute(searchSentence, sentence) <= threshold)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> search(String searchTerm, List<String> sentences) {
+        return findSimilarSentences(searchTerm, sentences, 3);
     }
 }

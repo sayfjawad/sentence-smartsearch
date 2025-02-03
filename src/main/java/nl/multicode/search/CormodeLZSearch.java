@@ -1,5 +1,6 @@
 package nl.multicode.search;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import nl.multicode.match.CormodeLZ;
 
 import java.util.List;
@@ -8,7 +9,8 @@ import java.util.stream.Collectors;
 /**
  * CormodeLZSimilaritySearch uses Cormode's LZ distance to find similar sentences.
  */
-public class CormodeLZSearch {
+@ApplicationScoped
+public class CormodeLZSearch implements Search {
     private final CormodeLZ cormodeLZ;
 
     /**
@@ -45,5 +47,10 @@ public class CormodeLZSearch {
     private boolean isSentenceSimilar(String searchSentence, String sentence, double threshold) {
         double distance = cormodeLZ.distAbs(searchSentence, sentence);
         return distance <= threshold;
+    }
+
+    @Override
+    public List<String> search(String searchTerm, List<String> sentences) {
+        return findSimilarSentences(searchTerm, sentences, 3);
     }
 }

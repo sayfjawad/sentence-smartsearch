@@ -1,5 +1,6 @@
 package nl.multicode.search;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import nl.multicode.match.IterativeSubString;
 
 import java.util.List;
@@ -9,7 +10,8 @@ import java.util.stream.Collectors;
  * IterativeSubStringSimilaritySearch uses I-Sub similarity to find similar sentences.
  * A sentence is considered similar if its similarity score is at least the provided threshold.
  */
-public class IterativeSubStringSearch {
+@ApplicationScoped
+public class IterativeSubStringSearch implements Search {
 
     private final IterativeSubString iterativeSubString;
 
@@ -44,5 +46,10 @@ public class IterativeSubStringSearch {
         return sentences.stream()
                 .filter(sentence -> iterativeSubString.sim(searchSentence, sentence) >= threshold)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> search(String searchTerm, List<String> sentences) {
+        return findSimilarSentences(searchTerm, sentences, 0.5);
     }
 }

@@ -1,5 +1,6 @@
 package nl.multicode.search;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import nl.multicode.match.Overlap;
 
 import java.util.List;
@@ -8,7 +9,8 @@ import java.util.stream.Collectors;
 /**
  * OverlapDistanceSearch gebruikt de Overlap-coëfficiënt om vergelijkbare zinnen te vinden.
  */
-public class OverlapSearch {
+@ApplicationScoped
+public class OverlapSearch implements Search {
     private final Overlap overlap;
 
     /**
@@ -30,5 +32,10 @@ public class OverlapSearch {
         return sentences.stream()
                 .filter(sentence -> overlap.sim(searchSentence, sentence) >= threshold)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> search(String searchTerm, List<String> sentences) {
+        return findSimilarSentences(searchTerm, sentences, 0.7);
     }
 }

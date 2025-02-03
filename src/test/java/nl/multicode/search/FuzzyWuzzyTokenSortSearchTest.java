@@ -32,6 +32,12 @@ class FuzzyWuzzyTokenSortSearchTest {
                 .contains("store Albert Heijn")
                 .contains("Heijn store Albert")
                 .hasSize(2);
+
+        similarSentences = search.search(searchSentence, sentences);
+        assertThat(similarSentences)
+                .contains("store Albert Heijn")
+                .contains("Heijn store Albert")
+                .hasSize(2);
     }
 
     /**

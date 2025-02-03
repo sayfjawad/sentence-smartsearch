@@ -1,5 +1,6 @@
 package nl.multicode.search;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import nl.multicode.match.FuzzyWuzzyTokenSort;
 
 import java.util.List;
@@ -8,7 +9,8 @@ import java.util.stream.Collectors;
 /**
  * FuzzyWuzzyTokenSortDistanceSearch finds similar sentences based on token-sorted fuzzy matching.
  */
-public class FuzzyWuzzyTokenSortSearch {
+@ApplicationScoped
+public class FuzzyWuzzyTokenSortSearch implements Search {
     private final FuzzyWuzzyTokenSort fuzzyTokenSortDistance;
 
     /**
@@ -30,5 +32,10 @@ public class FuzzyWuzzyTokenSortSearch {
         return sentences.stream()
                 .filter(sentence -> fuzzyTokenSortDistance.sim(searchSentence, sentence) >= threshold)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> search(String searchTerm, List<String> sentences) {
+        return findSimilarSentences(searchTerm, sentences, 0.5);
     }
 }

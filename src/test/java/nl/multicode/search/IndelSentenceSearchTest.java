@@ -25,7 +25,7 @@ class IndelSentenceSearchTest {
      */
     @Test
     void testAlbertHein() {
-        IndelSearch similarSentenceSearch = new IndelSearch(new Indel());
+        IndelSearch search = new IndelSearch(new Indel());
 
         String searchSentence = "Albert Heijn";
         List<String> sentences = Arrays.asList(
@@ -38,8 +38,13 @@ class IndelSentenceSearchTest {
         );
 
         int threshold = 3;
-        List<String> similarSentences = similarSentenceSearch.findSimilarSentences(searchSentence, sentences, threshold);
+        List<String> similarSentences = search.findSimilarSentences(searchSentence, sentences, threshold);
 
+        assertThat(similarSentences)
+                .contains("Alber Heijn")
+                .hasSize(1);
+
+        similarSentences = search.search(searchSentence, sentences);
         assertThat(similarSentences)
                 .contains("Alber Heijn")
                 .hasSize(1);

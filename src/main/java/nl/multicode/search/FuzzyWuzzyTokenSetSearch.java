@@ -1,5 +1,6 @@
 package nl.multicode.search;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import nl.multicode.match.FuzzyWuzzyTokenSet;
 
 import java.util.List;
@@ -8,7 +9,8 @@ import java.util.stream.Collectors;
 /**
  * FuzzyWuzzyTokenSetDistanceSearch finds similar sentences based on tokenized fuzzy matching.
  */
-public class FuzzyWuzzyTokenSetSearch {
+@ApplicationScoped
+public class FuzzyWuzzyTokenSetSearch implements Search {
     private final FuzzyWuzzyTokenSet fuzzyTokenSetDistance;
 
     /**
@@ -30,5 +32,10 @@ public class FuzzyWuzzyTokenSetSearch {
         return sentences.stream()
                 .filter(sentence -> fuzzyTokenSetDistance.sim(searchSentence, sentence) >= threshold)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> search(String searchTerm, List<String> sentences) {
+        return findSimilarSentences(searchTerm, sentences, 0.5);
     }
 }

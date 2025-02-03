@@ -1,5 +1,6 @@
 package nl.multicode.search;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import nl.multicode.match.Tichy;
 
 import java.util.List;
@@ -8,7 +9,8 @@ import java.util.stream.Collectors;
 /**
  * TichySimilaritySearch uses Tichy’s edit distance to find similar sentences.
  */
-public class TichySearch {
+@ApplicationScoped
+public class TichySearch implements Search {
     private final Tichy tichy;
 
     /**
@@ -44,5 +46,10 @@ public class TichySearch {
     private boolean isSentenceSimilar(String searchSentence, String sentence, double threshold) {
         double distance = tichy.distAbs(searchSentence, sentence);
         return distance <= threshold;
+    }
+
+    @Override
+    public List<String> search(String searchTerm, List<String> sentences) {
+        return findSimilarSentences(searchTerm, sentences, 2);
     }
 }

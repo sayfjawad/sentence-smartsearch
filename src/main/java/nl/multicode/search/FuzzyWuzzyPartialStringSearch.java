@@ -1,5 +1,6 @@
 package nl.multicode.search;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import nl.multicode.match.FuzzyWuzzyPartialString;
 
 import java.util.List;
@@ -8,7 +9,8 @@ import java.util.stream.Collectors;
 /**
  * FuzzyWuzzyPartialStringDistanceSearch finds similar sentences based on fuzzy matching.
  */
-public class FuzzyWuzzyPartialStringSearch {
+@ApplicationScoped
+public class FuzzyWuzzyPartialStringSearch implements Search {
     private final FuzzyWuzzyPartialString fuzzyDistance;
 
     /**
@@ -30,5 +32,10 @@ public class FuzzyWuzzyPartialStringSearch {
         return sentences.stream()
                 .filter(sentence -> fuzzyDistance.sim(searchSentence, sentence) >= threshold)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> search(String searchTerm, List<String> sentences) {
+        return findSimilarSentences(searchTerm, sentences, 0.6);
     }
 }

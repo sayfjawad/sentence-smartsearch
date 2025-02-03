@@ -25,7 +25,7 @@ class BagSearchTest {
      */
     @Test
     void testAlbertHein() {
-        BagSearch similarSentenceSearch = new BagSearch(new Bag());
+        BagSearch search = new BagSearch(new Bag());
 
         String searchSentence = "Albert Heijn";
         List<String> sentences = Arrays.asList(
@@ -38,11 +38,18 @@ class BagSearchTest {
         );
 
         int threshold = 3;
-        List<String> similarSentences = similarSentenceSearch.findSimilarSentences(searchSentence, sentences, threshold);
+        List<String> similarSentences = search.findSimilarSentences(searchSentence, sentences, threshold);
 
         assertThat(similarSentences)
                 .contains("Albört H ijn")
-                .contains("Alber Heijn");
+                .contains("Alber Heijn")
+                .hasSize(2);
+
+        similarSentences = search.search(searchSentence, sentences);
+        assertThat(similarSentences)
+                .contains("Albört H ijn")
+                .contains("Alber Heijn")
+                .hasSize(2);
     }
 
 }

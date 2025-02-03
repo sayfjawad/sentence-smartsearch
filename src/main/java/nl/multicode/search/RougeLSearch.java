@@ -1,5 +1,6 @@
 package nl.multicode.search;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import nl.multicode.match.RougeL;
 
 import java.util.List;
@@ -8,7 +9,8 @@ import java.util.stream.Collectors;
 /**
  * RougeLDistanceSearch uses Rouge-L similarity to find similar sentences.
  */
-public class RougeLSearch {
+@ApplicationScoped
+public class RougeLSearch implements Search {
     private final RougeL rougeL;
 
     /**
@@ -18,14 +20,6 @@ public class RougeLSearch {
         this.rougeL = new RougeL();
     }
 
-    /**
-     * Constructs a RougeLDistanceSearch instance with a custom beta value.
-     *
-     * @param beta The weighting factor to bias similarity toward the source string.
-     */
-    public RougeLSearch(double beta) {
-        this.rougeL = new RougeL(beta);
-    }
 
     /**
      * Finds sentences in the given list that have a similarity greater than or equal to the threshold.
@@ -39,5 +33,10 @@ public class RougeLSearch {
         return sentences.stream()
                 .filter(sentence -> rougeL.sim(searchSentence, sentence) >= threshold)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> search(String searchTerm, List<String> sentences) {
+        return findSimilarSentences(searchTerm, sentences, 0.5);
     }
 }

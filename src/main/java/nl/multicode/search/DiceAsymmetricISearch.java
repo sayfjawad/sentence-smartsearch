@@ -1,5 +1,6 @@
 package nl.multicode.search;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import nl.multicode.match.DiceAsymmetricI;
 
 import java.util.List;
@@ -8,7 +9,8 @@ import java.util.stream.Collectors;
 /**
  * DiceAsymmetricIDistanceSearch uses Dice's Asymmetric I distance to find similar sentences.
  */
-public class DiceAsymmetricISearch {
+@ApplicationScoped
+public class DiceAsymmetricISearch implements Search {
     private final DiceAsymmetricI diceDistance;
 
     /**
@@ -30,5 +32,10 @@ public class DiceAsymmetricISearch {
         return sentences.stream()
                 .filter(sentence -> diceDistance.sim(searchSentence, sentence) >= threshold)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> search(String searchTerm, List<String> sentences) {
+        return findSimilarSentences(searchTerm, sentences, 0.5);
     }
 }

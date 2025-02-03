@@ -1,5 +1,6 @@
 package nl.multicode.search;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import nl.multicode.match.SSK;
 
 import java.util.List;
@@ -8,7 +9,8 @@ import java.util.stream.Collectors;
 /**
  * SSKDistanceSearch finds similar sentences using SSK similarity.
  */
-public class SSKSearch {
+@ApplicationScoped
+public class SSKSearch implements Search {
     private final SSK ssk;
 
     /**
@@ -30,5 +32,10 @@ public class SSKSearch {
         return sentences.stream()
                 .filter(sentence -> ssk.sim(searchSentence, sentence) >= threshold)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> search(String searchTerm, List<String> sentences) {
+        return findSimilarSentences(searchTerm, sentences, 0.2);
     }
 }

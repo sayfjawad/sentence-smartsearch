@@ -25,7 +25,12 @@ class TypoSearchTest {
 
         double threshold = 0.7;
         List<String> similarSentences = search.findSimilarSentences(searchSentence, sentences, threshold);
+        assertThat(similarSentences)
+                .contains("Albört H ijn")
+                .contains("Alber Heijn")
+                .hasSize(2);
 
+        similarSentences = search.search(searchSentence, sentences);
         assertThat(similarSentences)
                 .contains("Albört H ijn")
                 .contains("Alber Heijn")

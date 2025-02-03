@@ -34,12 +34,12 @@ class DiceAsymmetricISearchTest {
                 .contains("Alber Heijn")
                 .contains("Albert Heijn store")
                 .hasSize(3);
-    }
 
-    /**
-     * A helper for approximate double comparison.
-     */
-    private static org.assertj.core.api.Condition<Double> within(double tolerance) {
-        return new org.assertj.core.api.Condition<>(d -> Math.abs(d) < tolerance, "within " + tolerance);
+        similarSentences = search.search(searchSentence, sentences);
+        assertThat(similarSentences)
+                .contains("Albört H ijn")
+                .contains("Alber Heijn")
+                .contains("Albert Heijn store")
+                .hasSize(3);
     }
 }

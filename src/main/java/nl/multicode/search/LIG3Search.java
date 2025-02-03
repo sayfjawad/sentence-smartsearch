@@ -1,5 +1,6 @@
 package nl.multicode.search;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import nl.multicode.match.LIG3;
 
 import java.util.List;
@@ -8,7 +9,8 @@ import java.util.stream.Collectors;
 /**
  * LIG3DistanceSearch finds similar sentences based on LIG3 similarity.
  */
-public class LIG3Search {
+@ApplicationScoped
+public class LIG3Search implements Search {
     private final LIG3 lig3;
 
     /**
@@ -30,5 +32,10 @@ public class LIG3Search {
         return sentences.stream()
                 .filter(sentence -> lig3.sim(searchSentence, sentence) >= threshold)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> search(String searchTerm, List<String> sentences) {
+        return findSimilarSentences(searchTerm, sentences, 0.7);
     }
 }

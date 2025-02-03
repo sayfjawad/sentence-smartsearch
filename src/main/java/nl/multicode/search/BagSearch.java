@@ -1,5 +1,6 @@
 package nl.multicode.search;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import nl.multicode.match.Bag;
 
 import java.util.List;
@@ -8,7 +9,8 @@ import java.util.stream.Collectors;
 /**
  * Zoekt vergelijkbare zinnen op basis van de Bag Distance.
  */
-public class BagSearch implements Search{
+@ApplicationScoped
+public class BagSearch implements Search {
 
     private final Bag bag;
 
@@ -37,6 +39,6 @@ public class BagSearch implements Search{
 
     @Override
     public List<String> search(String searchTerm, List<String> sentences) {
-        return List.of();
+        return findSimilarSentences(searchTerm, sentences, 3);
     }
 }

@@ -1,5 +1,6 @@
 package nl.multicode.search;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import nl.multicode.match.DoubleMetaphoneEncoder;
 
 import java.util.List;
@@ -8,7 +9,8 @@ import java.util.stream.Collectors;
 /**
  * Searches for similar sentences using Double Metaphone.
  */
-public class DoubleMetaphoneSearch {
+@ApplicationScoped
+public class DoubleMetaphoneSearch implements Search {
 
     private final DoubleMetaphoneEncoder encoder;
 
@@ -37,5 +39,10 @@ public class DoubleMetaphoneSearch {
                     return sentenceCode.equals(searchCode) || sentenceAltCode.equals(searchAltCode);
                 })
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> search(String searchTerm, List<String> sentences) {
+        return findSimilarSentences(searchTerm, sentences);
     }
 }

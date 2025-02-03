@@ -1,5 +1,6 @@
 package nl.multicode.search;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import nl.multicode.match.KuhnsIII;
 
 import java.util.List;
@@ -8,7 +9,8 @@ import java.util.stream.Collectors;
 /**
  * KuhnsIIIDistanceSearch uses Kuhns III correlation to find similar sentences.
  */
-public class KuhnsIIISearch {
+@ApplicationScoped
+public class KuhnsIIISearch implements Search {
     private final KuhnsIII kuhnsDistance;
 
     /**
@@ -30,5 +32,10 @@ public class KuhnsIIISearch {
         return sentences.stream()
                 .filter(sentence -> kuhnsDistance.sim(searchSentence, sentence) >= threshold)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> search(String searchTerm, List<String> sentences) {
+        return findSimilarSentences(searchTerm, sentences, 0.2);
     }
 }

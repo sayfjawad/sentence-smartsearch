@@ -1,5 +1,6 @@
 package nl.multicode.search;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import nl.multicode.match.LevenshteinDistance;
 
 import java.util.List;
@@ -8,7 +9,8 @@ import java.util.stream.Collectors;
 /**
  * Zoekt vergelijkbare zinnen op basis van de Levenshtein-afstand.
  */
-public class LevenshteinDistanceSearch {
+@ApplicationScoped
+public class LevenshteinDistanceSearch implements Search {
 
     private final LevenshteinDistance levenshteinDistance;
 
@@ -33,5 +35,10 @@ public class LevenshteinDistanceSearch {
         return sentences.stream()
                 .filter(sentence -> levenshteinDistance.dist(searchSentence, sentence) <= threshold)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> search(String searchTerm, List<String> sentences) {
+        return findSimilarSentences(searchTerm, sentences, 3);
     }
 }

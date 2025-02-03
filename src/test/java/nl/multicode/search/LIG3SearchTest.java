@@ -43,5 +43,12 @@ class LIG3SearchTest {
                 .contains("Albert Heijn store")
                 .contains("Alber Heijn")
                 .hasSize(3);
+
+        similarSentences = search.search(searchSentence, sentences);
+        assertThat(similarSentences)
+                .contains("Albört H ijn")
+                .contains("Alber Heijn")
+                .contains("Albert Heijn store")
+                .hasSize(3);
     }
 }

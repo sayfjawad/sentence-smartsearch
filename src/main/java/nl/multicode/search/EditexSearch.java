@@ -1,5 +1,6 @@
 package nl.multicode.search;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import nl.multicode.match.Editex;
 
 import java.util.List;
@@ -8,7 +9,8 @@ import java.util.stream.Collectors;
 /**
  * EditexDistanceSearch finds similar sentences based on phonetic edit distance.
  */
-public class EditexSearch {
+@ApplicationScoped
+public class EditexSearch implements Search {
     private final Editex editex;
 
     /**
@@ -30,5 +32,10 @@ public class EditexSearch {
         return sentences.stream()
                 .filter(sentence -> editex.sim(searchSentence, sentence) >= threshold)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> search(String searchTerm, List<String> sentences) {
+        return findSimilarSentences(searchTerm, sentences, 0.7);
     }
 }

@@ -1,5 +1,6 @@
 package nl.multicode.search;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import nl.multicode.match.Typo;
 
 import java.util.List;
@@ -8,7 +9,8 @@ import java.util.stream.Collectors;
 /**
  * TypoDistanceSearch finds similar sentences based on typo-aware edit distance.
  */
-public class TypoSearch {
+@ApplicationScoped
+public class TypoSearch implements Search {
     private final Typo typo;
 
     /**
@@ -30,5 +32,10 @@ public class TypoSearch {
         return sentences.stream()
                 .filter(sentence -> typo.sim(searchSentence, sentence) >= threshold)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> search(String searchTerm, List<String> sentences) {
+        return findSimilarSentences(searchTerm, sentences, 0.7);
     }
 }

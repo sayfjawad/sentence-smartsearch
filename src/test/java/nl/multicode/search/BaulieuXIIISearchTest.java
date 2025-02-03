@@ -25,7 +25,7 @@ class BaulieuXIIISearchTest {
      */
     @Test
     void testAlbertHein() {
-        BaulieuXIIISearch similarSentenceSearch = new BaulieuXIIISearch(new BaulieuXIII());
+        BaulieuXIIISearch search = new BaulieuXIIISearch(new BaulieuXIII());
 
         String searchSentence = "Albert Heijn";
         List<String> sentences = Arrays.asList(
@@ -38,12 +38,19 @@ class BaulieuXIIISearchTest {
         );
 
         double threshold = 0.5;
-        List<String> similarSentences = similarSentenceSearch.findSimilarSentences(searchSentence, sentences, threshold);
+        List<String> similarSentences = search.findSimilarSentences(searchSentence, sentences, threshold);
 
         assertThat(similarSentences)
                 .contains("Albört H ijn")
                 .contains("Albert Heijn store")
                 .contains("Alber Heijn")
+                .hasSize(3);
+
+        similarSentences = search.search(searchSentence, sentences);
+        assertThat(similarSentences)
+                .contains("Albört H ijn")
+                .contains("Alber Heijn")
+                .contains("Albert Heijn store")
                 .hasSize(3);
     }
 

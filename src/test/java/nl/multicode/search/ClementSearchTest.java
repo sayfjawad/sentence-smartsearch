@@ -33,5 +33,11 @@ class ClementSearchTest {
                 .contains("Albört H ijn")
                 .contains("Albert Heijn store")
                 .hasSize(2);
+
+        similarSentences = search.search(searchSentence, sentences);
+        assertThat(similarSentences)
+                .contains("Albört H ijn")
+                .contains("Albert Heijn store")
+                .hasSize(2);
     }
 }

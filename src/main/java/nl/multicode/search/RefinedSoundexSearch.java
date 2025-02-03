@@ -1,5 +1,6 @@
 package nl.multicode.search;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import nl.multicode.match.RefinedSoundex;
 
 import java.util.List;
@@ -8,7 +9,8 @@ import java.util.stream.Collectors;
 /**
  * Searches for similar sentences using Refined Soundex.
  */
-public class RefinedSoundexSearch {
+@ApplicationScoped
+public class RefinedSoundexSearch implements Search {
 
     private final RefinedSoundex soundex;
 
@@ -50,5 +52,10 @@ public class RefinedSoundexSearch {
             }
         }
         return (double) common / Math.max(code1.length(), code2.length());
+    }
+
+    @Override
+    public List<String> search(String searchTerm, List<String> sentences) {
+        return findSimilarSentences(searchTerm, sentences, 0.5);
     }
 }
