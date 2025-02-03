@@ -1,28 +1,26 @@
-import nl.multicode.match.LevenshteinDistance;
-import nl.multicode.search.LevenshteinSimilaritySearch;
+import jakarta.ws.rs.core.Application;
+import org.eclipse.microprofile.openapi.annotations.OpenAPIDefinition;
+import org.eclipse.microprofile.openapi.annotations.info.Contact;
+import org.eclipse.microprofile.openapi.annotations.info.Info;
+import org.eclipse.microprofile.openapi.annotations.info.License;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
-import java.util.Arrays;
-import java.util.List;
+@OpenAPIDefinition(
+        tags = {
+                @Tag(name = "widget", description = "Widget operations."),
+                @Tag(name = "gasket", description = "Operations related to gaskets")
+        },
+        info = @Info(
+                title = "Smart Sentence Search API",
+                version = "1.0.1",
+                contact = @Contact(
+                        name = "API Support",
+                        url = "http://exampleurl.com/contact",
+                        email = "sayf@multicode.nl"),
+                license = @License(
+                        name = "Apache 2.0",
+                        url = "https://www.apache.org/licenses/LICENSE-2.0.html"))
+)
+public class MainApp extends Application {
 
-public class MainApp {
-
-    public static void main(String[] args) {
-
-        LevenshteinSimilaritySearch autoGrouper = new LevenshteinSimilaritySearch(new LevenshteinDistance());
-
-        String searchSentence = "Albert Heijn";
-        List<String> sentences = Arrays.asList(
-                "Albört H ijn",
-                "Action",
-                "Blokker",
-                "H&M",
-                "Albert Heijn store",
-                "Alber Heijn"
-        );
-
-        int threshold = 3;
-        List<String> similarSentences = autoGrouper.findSimilarSentences(searchSentence, sentences, threshold);
-
-        System.out.println("Similar sentences: " + similarSentences);
-    }
 }

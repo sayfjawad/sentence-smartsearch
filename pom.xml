@@ -56,6 +56,10 @@
             <version>3.24.2</version> <!-- Use the latest stable version -->
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-smallrye-openapi</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

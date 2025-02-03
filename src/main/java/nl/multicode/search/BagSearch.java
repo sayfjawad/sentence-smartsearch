@@ -1,0 +1,42 @@
+package nl.multicode.search;
+
+import nl.multicode.match.Bag;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+/**
+ * Zoekt vergelijkbare zinnen op basis van de Bag Distance.
+ */
+public class BagSearch implements Search{
+
+    private final Bag bag;
+
+    /**
+     * Constructor met een externe BagDistance-instantie (voor testbaarheid).
+     */
+    public BagSearch(Bag bag) {
+        this.bag = bag;
+    }
+
+    /**
+     * Vindt zinnen in de lijst die vergelijkbaar zijn met de zoekzin.
+     *
+     * @param searchSentence De zin waarmee wordt vergeleken.
+     * @param sentences      De lijst met zinnen om door te zoeken.
+     * @param threshold      De maximale toegestane Bag Distance voor een match.
+     * @return Een lijst met vergelijkbare zinnen.
+     */
+    public List<String> findSimilarSentences(final String searchSentence,
+                                             final List<String> sentences,
+                                             final int threshold) {
+        return sentences.stream()
+                .filter(sentence -> bag.compute(searchSentence, sentence) <= threshold)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> search(String searchTerm, List<String> sentences) {
+        return List.of();
+    }
+}

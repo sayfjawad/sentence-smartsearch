@@ -1,6 +1,6 @@
 package nl.multicode.search;
 
-import nl.multicode.match.Indel;
+import nl.multicode.match.BaulieuXIII;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -8,7 +8,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class IndelSentenceSearchTest {
+class BaulieuXIIISearchTest {
 
     /**
      * Tests the functionality of the `SimilarSentenceSearch` class to find sentences similar
@@ -25,7 +25,7 @@ class IndelSentenceSearchTest {
      */
     @Test
     void testAlbertHein() {
-        IndelSearch similarSentenceSearch = new IndelSearch(new Indel());
+        BaulieuXIIISearch similarSentenceSearch = new BaulieuXIIISearch(new BaulieuXIII());
 
         String searchSentence = "Albert Heijn";
         List<String> sentences = Arrays.asList(
@@ -37,12 +37,14 @@ class IndelSentenceSearchTest {
                 "Alber Heijn"
         );
 
-        int threshold = 3;
+        double threshold = 0.5;
         List<String> similarSentences = similarSentenceSearch.findSimilarSentences(searchSentence, sentences, threshold);
 
         assertThat(similarSentences)
+                .contains("Albört H ijn")
+                .contains("Albert Heijn store")
                 .contains("Alber Heijn")
-                .hasSize(1);
+                .hasSize(3);
     }
 
 }

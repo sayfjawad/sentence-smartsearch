@@ -1,6 +1,6 @@
 package nl.multicode.search;
 
-import nl.multicode.match.BagDistance;
+import nl.multicode.match.Bag;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -25,7 +25,7 @@ class BagSearchTest {
      */
     @Test
     void testAlbertHein() {
-        BagSimilaritySearch similarSentenceSearch = new BagSimilaritySearch(new BagDistance());
+        BagSearch similarSentenceSearch = new BagSearch(new Bag());
 
         String searchSentence = "Albert Heijn";
         List<String> sentences = Arrays.asList(
