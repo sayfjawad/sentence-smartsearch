@@ -1,8 +1,11 @@
 package nl.multicode.match;
 
+import jakarta.enterprise.context.ApplicationScoped;
+
 /**
  * Implementeert de Indel Distance (alleen invoegingen en verwijderingen).
  */
+@ApplicationScoped
 public class Indel {
 
     /**

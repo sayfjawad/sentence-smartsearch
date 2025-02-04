@@ -16,8 +16,8 @@ public class TypoSearch implements Search {
     /**
      * Constructs a TypoDistanceSearch instance.
      */
-    public TypoSearch() {
-        this.typo = new Typo();
+    public TypoSearch(final Typo typo) {
+        this.typo = typo;
     }
 
     /**

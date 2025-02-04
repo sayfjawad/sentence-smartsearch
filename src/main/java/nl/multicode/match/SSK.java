@@ -1,11 +1,15 @@
 package nl.multicode.match;
 
+import jakarta.enterprise.context.ApplicationScoped;
+
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * SSKDistance implements the String Subsequence Kernel similarity.
  */
+@ApplicationScoped
+
 public class SSK {
 
     private final double sskLambda;

@@ -1,11 +1,14 @@
 package nl.multicode.match;
 
+import jakarta.enterprise.context.ApplicationScoped;
+
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Implements the Refined Soundex algorithm.
  */
+@ApplicationScoped
 public class RefinedSoundex {
 
     private static final Map<Character, Character> SOUND_MAPPING = new HashMap<>();

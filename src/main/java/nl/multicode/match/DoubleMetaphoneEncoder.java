@@ -1,7 +1,6 @@
 package nl.multicode.match;
 
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
 import org.apache.commons.codec.language.DoubleMetaphone;
 
 /**
@@ -10,7 +9,7 @@ import org.apache.commons.codec.language.DoubleMetaphone;
 @ApplicationScoped
 public class DoubleMetaphoneEncoder {
 
-    @Inject DoubleMetaphone doubleMetaphone;
+    private final DoubleMetaphone doubleMetaphone;
 
     /**
      * Constructs a DoubleMetaphoneEncoder instance.

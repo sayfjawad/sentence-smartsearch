@@ -1,5 +1,7 @@
 package nl.multicode.match;
 
+import jakarta.enterprise.context.ApplicationScoped;
+
 /**
  * CormodeLZDistance implements Cormode's LZ distance.
  *
@@ -20,6 +22,7 @@ package nl.multicode.match;
  * of the source string.
  * </p>
  */
+@ApplicationScoped
 public class CormodeLZ {
 
     /**

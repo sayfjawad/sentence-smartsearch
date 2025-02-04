@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
  */
 @ApplicationScoped
 public class DiceAsymmetricISearch implements Search {
+
     private final DiceAsymmetricI diceDistance;
 
     /**

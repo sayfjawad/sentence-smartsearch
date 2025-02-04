@@ -13,8 +13,12 @@ import java.util.stream.Collectors;
 @ApplicationScoped
 public class LIG3Search implements Search {
 
+    private final LIG3 lig3;
+
     @Inject
-    LIG3 lig3;
+    public LIG3Search(LIG3 lig3) {
+        this.lig3 = lig3;
+    }
 
 
     /**

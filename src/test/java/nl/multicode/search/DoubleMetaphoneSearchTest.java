@@ -1,5 +1,6 @@
 package nl.multicode.search;
 
+import nl.multicode.match.DoubleMetaphoneEncoder;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -11,7 +12,7 @@ class DoubleMetaphoneSearchTest {
 
     @Test
     void testAlbertHeijnSimilaritySearch() {
-        DoubleMetaphoneSearch search = new DoubleMetaphoneSearch();
+        DoubleMetaphoneSearch search = new DoubleMetaphoneSearch(new DoubleMetaphoneEncoder());
 
         String searchSentence = "Albert Heijn";
         List<String> sentences = Arrays.asList(

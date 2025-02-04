@@ -23,7 +23,7 @@ class LIG3SearchTest {
 
     @Test
     void testAlbertHeijnSimilaritySearch() {
-        LIG3Search search = new LIG3Search();
+        LIG3Search search = new LIG3Search(new LIG3());
 
         String searchSentence = "Albert Heijn";
         List<String> sentences = Arrays.asList(

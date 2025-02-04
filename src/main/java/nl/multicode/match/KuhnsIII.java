@@ -1,5 +1,7 @@
 package nl.multicode.match;
 
+import jakarta.enterprise.context.ApplicationScoped;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -12,6 +14,7 @@ import java.util.Set;
  *     δ(X, Y) / ((1 - |X ∩ Y| / (|X| + |Y|)) * (|X| + |Y| - |X|*|Y| / |N|))
  * </pre>
  */
+@ApplicationScoped
 public class KuhnsIII {
 
     /**

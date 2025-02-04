@@ -1,18 +1,16 @@
 package nl.multicode.match;
 
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+
 /**
  * LIG3Distance implements a similarity measure based on Levenshtein and exact character matches.
  */
+@ApplicationScoped  // Make it a CDI bean
 public class LIG3 {
 
-    private final LevenshteinDistance levenshteinDistance;
-
-    /**
-     * Constructs a LIG3Distance instance.
-     */
-    public LIG3() {
-        this.levenshteinDistance = new LevenshteinDistance();
-    }
+    @Inject
+    LevenshteinDistance levenshteinDistance;
 
     /**
      * Computes the LIG3 similarity between two strings.

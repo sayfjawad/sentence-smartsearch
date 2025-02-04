@@ -1,5 +1,7 @@
 package nl.multicode.match;
 
+import jakarta.enterprise.context.ApplicationScoped;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -13,6 +15,7 @@ import java.util.Set;
  * where X and Y are the tokenized sets of characters.
  * </p>
  */
+@ApplicationScoped
 public class DiceAsymmetricI {
 
     /**

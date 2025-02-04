@@ -1,6 +1,8 @@
 package nl.multicode.match;
 
 
+import jakarta.enterprise.context.ApplicationScoped;
+
 /**
  * TichyDistance implements Tichy’s edit distance.
  * <p>
@@ -14,6 +16,7 @@ package nl.multicode.match;
  *
  * The normalized distance divides the absolute score by (target length × max(cost)).
  */
+@ApplicationScoped
 public class Tichy {
     private final int moveCost;
     private final int addCost;

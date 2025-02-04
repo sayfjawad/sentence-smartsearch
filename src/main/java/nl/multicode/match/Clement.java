@@ -1,5 +1,7 @@
 package nl.multicode.match;
 
+import jakarta.enterprise.context.ApplicationScoped;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -14,6 +16,7 @@ import java.util.Set;
  * </pre>
  * where N is the set of all unique tokens in the comparison.
  */
+@ApplicationScoped
 public class Clement {
 
     /**

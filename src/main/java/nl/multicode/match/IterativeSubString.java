@@ -1,5 +1,7 @@
 package nl.multicode.match;
 
+import jakarta.enterprise.context.ApplicationScoped;
+
 /**
  * IterativeSubString implements the Iterative-SubString (I-Sub) correlation.
  * <p>
@@ -27,6 +29,7 @@ package nl.multicode.match;
  * so that similarity lies in the range [0, 1].
  * </p>
  */
+@ApplicationScoped
 public class IterativeSubString {
 
     private final double hamacher;

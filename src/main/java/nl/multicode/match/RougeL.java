@@ -1,5 +1,7 @@
 package nl.multicode.match;
 
+import jakarta.enterprise.context.ApplicationScoped;
+
 /**
  * RougeLDistance implements the Rouge-L similarity measure.
  * <p>
@@ -14,6 +16,7 @@ package nl.multicode.match;
  * - beta is a weighting factor (default = 8)
  * </p>
  */
+@ApplicationScoped
 public class RougeL {
 
     private final double beta;

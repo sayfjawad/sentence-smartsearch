@@ -1,5 +1,6 @@
 package nl.multicode.search;
 
+import nl.multicode.match.Typo;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -11,7 +12,7 @@ class TypoSearchTest {
 
     @Test
     void testAlbertHeijnSimilaritySearch() {
-        TypoSearch search = new TypoSearch();
+        TypoSearch search = new TypoSearch(new Typo());
 
         String searchSentence = "Albert Heijn";
         List<String> sentences = Arrays.asList(

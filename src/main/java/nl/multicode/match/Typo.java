@@ -1,5 +1,7 @@
 package nl.multicode.match;
 
+import jakarta.enterprise.context.ApplicationScoped;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,6 +12,7 @@ import java.util.Map;
  * between characters that are close on the keyboard.
  * </p>
  */
+@ApplicationScoped
 public class Typo {
 
     private static final int MATCH_COST = 0;

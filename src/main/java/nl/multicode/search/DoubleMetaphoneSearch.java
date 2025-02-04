@@ -13,8 +13,11 @@ import java.util.stream.Collectors;
 @ApplicationScoped
 public class DoubleMetaphoneSearch implements Search {
 
-    @Inject
-    DoubleMetaphoneEncoder encoder;
+    private final DoubleMetaphoneEncoder encoder;
+
+    public DoubleMetaphoneSearch(DoubleMetaphoneEncoder encoder) {
+        this.encoder = encoder;
+    }
 
 
     /**

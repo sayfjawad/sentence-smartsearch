@@ -1,5 +1,7 @@
 package nl.multicode.match;
 
+import jakarta.enterprise.context.ApplicationScoped;
+
 /**
  * RatcliffObershelpDistance implements the Ratcliff-Obershelp similarity measure.
  * <p>
@@ -11,6 +13,8 @@ package nl.multicode.match;
  * on the remaining left and right substrings.
  * </p>
  */
+@ApplicationScoped
+
 public class RatcliffObershelp {
 
     /**
