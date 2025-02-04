@@ -29,7 +29,7 @@ public class SmartSearchService {
                         algorithm -> algorithm.searchWithScores(searchTerm, tokens).stream()
                                 .filter(entry -> entry.getValue() >= getMinimumThreshold(algorithm.getAlgorithmName()))
                                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-                                .limit(2) // Return top 5 matches per algorithm
+                                .limit(3) // Return top 3 matches per algorithm
                                 .collect(Collectors.toList())
                 ));
     }
