@@ -36,6 +36,6 @@ public class ClementSearch implements Search {
 
     @Override
     public List<String> search(String searchTerm, List<String> sentences) {
-        return findSimilarSentences(searchTerm, sentences, 0.07);
+        return findSimilarSentences(searchTerm, sentences, 0.5);
     }
 }

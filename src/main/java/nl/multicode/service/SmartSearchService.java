@@ -1,7 +1,6 @@
 package nl.multicode.service;
 
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.inject.Any;
 import jakarta.enterprise.inject.Instance;
 import nl.multicode.search.Search;
 
@@ -13,8 +12,11 @@ import java.util.stream.IntStream;
 @ApplicationScoped
 public class SmartSearchService {
 
-    @Any
-    Instance<Search> searchAlgorithms;
+    private final Instance<Search> searchAlgorithms;
+
+    public SmartSearchService(Instance<Search> searchAlgorithms) {
+        this.searchAlgorithms = searchAlgorithms;
+    }
 
     public Map<String, List<String>> performSearch(final String searchTerm, final String largeText) {
         // Generate overlapping windows from large text

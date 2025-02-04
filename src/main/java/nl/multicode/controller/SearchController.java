@@ -5,13 +5,13 @@ import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
+import nl.multicode.model.SearchRequest;
 import nl.multicode.service.SmartSearchService;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
-import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
+import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 
 import java.util.List;
@@ -30,10 +30,10 @@ public class SearchController {
     }
 
     @POST
-    @Path("/query")
+    @Path("/analyze")
     @Operation(
-            summary = "Perform smart sentence search",
-            description = "Accepts a search term and a list of sentences via query parameters"
+            summary = "Perform smart search on a large text",
+            description = "Accepts a search term and a large text body, and finds matching text fragments using multiple search algorithms."
     )
     @APIResponse(
             responseCode = "200",
@@ -41,13 +41,13 @@ public class SearchController {
             content = @Content(mediaType = MediaType.APPLICATION_JSON,
                     schema = @Schema(implementation = Map.class))
     )
-    public Map<String, List<String>> searchWithQueryParams(
-            @Parameter(description = "Search term", example = "Albert Heijn")
-            @QueryParam("search") String search,
-            @Parameter(description = "Comma-separated list of sentences", example = "We went to the Albert Heijn store, and got som Aubergine and Heineken brew!")
-            @QueryParam("sentences") String sentences) {
+    public Map<String, List<String>> search(
+            @RequestBody(
+                    description = "JSON payload containing search term and large text",
+                    required = true,
+                    content = @Content(schema = @Schema(implementation = SearchRequest.class))
+            ) SearchRequest request) {
 
-        // Simulating a response
-        return smartSearchService.performSearch(search, sentences);
+        return smartSearchService.performSearch(request.searchTerm, request.text);
     }
 }

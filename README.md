@@ -4,6 +4,46 @@ This project uses Quarkus, the Supersonic Subatomic Java Framework.
 
 If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
 
+## Overview
+
+sentence-smartsearch is a Quarkus-based application designed for performing advanced text similarity searches. It utilizes multiple string matching algorithms to detect similar phrases within large text bodies. The service supports various similarity measures, allowing users to find approximate matches based on different linguistic and statistical approaches.
+
+## Features
+
+- **Multi-algorithm smart search**: Supports multiple search algorithms for flexible similarity detection.
+- **Sliding window search**: Automatically extracts overlapping text segments to enhance matching.
+- **REST API with OpenAPI/Swagger UI**: Easily interact with the service via a documented API.
+- **Efficient and scalable**: Built on Quarkus for high-performance execution and cloud-native readiness.
+
+## Supported Algorithms
+
+The application supports a variety of string similarity algorithms:
+
+- **Bag**
+- **BaulieuXIII**
+- **Clement**
+- **CormodeLZ**
+- **DiceAsymmetricI**
+- **DoubleMetaphoneEncoder**
+- **Editex**
+- **FuzzyWuzzyPartialString**
+- **FuzzyWuzzyTokenSet**
+- **FuzzyWuzzyTokenSort**
+- **Indel**
+- **IterativeSubString**
+- **KuhnsIII**
+- **LevenshteinDistance**
+- **LIG3**
+- **Overlap**
+- **RatcliffObershelp**
+- **RefinedSoundex**
+- **RougeL**
+- **SSK**
+- **Tichy**
+- **Typo**
+
+Each algorithm offers a unique perspective on similarity detection, catering to different use cases such as phonetic matching, token-based similarity, and edit distance computation.
+
 ## Running the application in dev mode
 
 You can run your application in dev mode that enables live coding using:
@@ -53,7 +93,37 @@ You can then execute your native executable with: `./target/sentence-smartsearch
 
 If you want to learn more about building native executables, please consult <https://quarkus.io/guides/maven-tooling>.
 
+## API Usage
+
+The application exposes a REST API that allows users to perform smart sentence searches. The API can be accessed via Swagger UI at:
+
+```
+http://localhost:8080/q/swagger-ui/
+```
+
+### Search Endpoint
+
+**POST /search/analyze**
+
+**Request Body:**
+```json
+{
+  "searchTerm": "Albert Heijn",
+  "text": "We went to the Albert Heijn store, and got some Aubergine and Heineken brew!"
+}
+```
+
+**Response:**
+```json
+{
+  "LevenshteinDistance": ["Albert Heijn store"],
+  "FuzzyWuzzyTokenSort": ["Aubergine and Heineken brew"]
+}
+```
+
+This response contains a map of algorithm names to matching text fragments.
+
 ## Related Guides
 
-- REST Jackson ([guide](https://quarkus.io/guides/rest#json-serialisation)): Jackson serialization support for Quarkus REST. This extension is not compatible with the quarkus-resteasy extension, or any of the extensions that depend on it
-# sentence-smartsearch
+- REST Jackson ([guide](https://quarkus.io/guides/rest#json-serialisation)): Jackson serialization support for Quarkus REST. This extension is not compatible with the quarkus-resteasy extension, or any of the extensions that depend on it.
+
