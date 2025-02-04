@@ -1,75 +1,70 @@
 package nl.multicode.match;
 
 import jakarta.enterprise.context.ApplicationScoped;
-
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Implementeert de Baulieu XIII Distance voor het vergelijken van strings.
+ * Implements the Baulieu XIII Distance for string similarity comparison.
  */
 @ApplicationScoped
 public class BaulieuXIII {
 
     /**
-     * Berekent de Baulieu XIII Distance tussen twee strings.
+     * Computes the Baulieu XIII similarity between two strings.
      *
-     * @param src De bronstring.
-     * @param tar De doelstring.
-     * @return De Baulieu XIII Distance tussen de twee strings.
+     * @param src The source string.
+     * @param tar The target string.
+     * @return The similarity score in range [0.0, 1.0].
      */
     public double compute(String src, String tar) {
-        if (src.equals(tar)) {
-            return 0.0;
+        if (src.equalsIgnoreCase(tar)) {
+            return 1.0; // Perfect match
         }
 
-        // Maak multisets (bags) voor de bron- en doelstrings
-        Map<Character, Integer> srcBag = createMultiset(src);
-        Map<Character, Integer> tarBag = createMultiset(tar);
+        Map<String, Integer> srcBag = createWordBag(src);
+        Map<String, Integer> tarBag = createWordBag(tar);
 
-        // Bereken snijpunt en verschillen
-        int intersectionCardinality = multisetIntersectionCardinality(srcBag, tarBag);
-        int srcOnlyCardinality = multisetDifferenceCardinality(srcBag, tarBag);
-        int tarOnlyCardinality = multisetDifferenceCardinality(tarBag, srcBag);
+        int intersection = multisetIntersectionCardinality(srcBag, tarBag);
+        int srcOnly = multisetDifferenceCardinality(srcBag, tarBag);
+        int tarOnly = multisetDifferenceCardinality(tarBag, srcBag);
 
-        // Bereken de Baulieu XIII afstand
-        double numerator = srcOnlyCardinality + tarOnlyCardinality;
-        double denominator = intersectionCardinality + srcOnlyCardinality + tarOnlyCardinality +
-                intersectionCardinality * Math.pow(intersectionCardinality - 4, 2);
+        double numerator = srcOnly + tarOnly;
+        double denominator = intersection + srcOnly + tarOnly + (intersection * Math.pow(intersection - 4, 2));
 
         if (denominator == 0.0) {
-            return 0.0; // Vermijd deling door nul
+            return 0.0; // Avoid division by zero
         }
 
-        return numerator / denominator;
+        return 1.0 - (numerator / denominator); // Convert to similarity score
     }
 
     /**
-     * Maakt een multiset (bag) van een string.
+     * Creates a word-level multiset (bag) from a string.
      *
-     * @param str De invoerstring.
-     * @return Een map die de multiset vertegenwoordigt.
+     * @param str The input string.
+     * @return A map representing the word multiset.
      */
-    private Map<Character, Integer> createMultiset(String str) {
-        Map<Character, Integer> multiset = new HashMap<>();
-        for (char c : str.toCharArray()) {
-            multiset.put(c, multiset.getOrDefault(c, 0) + 1);
+    private Map<String, Integer> createWordBag(String str) {
+        Map<String, Integer> multiset = new HashMap<>();
+        for (String word : str.toLowerCase().split("\\s+")) {
+            multiset.put(word, multiset.getOrDefault(word, 0) + 1);
         }
         return multiset;
     }
 
     /**
-     * Berekent de cardinaliteit van de multiset doorsnede.
+     * Computes the cardinality of the multiset intersection.
      *
-     * @param multisetA De eerste multiset.
-     * @param multisetB De tweede multiset.
-     * @return De cardinaliteit van de multiset doorsnede.
+     * @param multisetA The first multiset.
+     * @param multisetB The second multiset.
+     * @return The cardinality of the intersection.
      */
-    private int multisetIntersectionCardinality(Map<Character, Integer> multisetA,
-                                                Map<Character, Integer> multisetB) {
+    private int multisetIntersectionCardinality(Map<String, Integer> multisetA,
+                                                Map<String, Integer> multisetB) {
         int cardinality = 0;
-        for (Map.Entry<Character, Integer> entry : multisetA.entrySet()) {
-            char key = entry.getKey();
+        for (Map.Entry<String, Integer> entry : multisetA.entrySet()) {
+            String key = entry.getKey();
             int countA = entry.getValue();
             int countB = multisetB.getOrDefault(key, 0);
             cardinality += Math.min(countA, countB);
@@ -78,17 +73,17 @@ public class BaulieuXIII {
     }
 
     /**
-     * Berekent de cardinaliteit van het multiset-verschil (A - B).
+     * Computes the cardinality of the multiset difference (A - B).
      *
-     * @param multisetA De eerste multiset.
-     * @param multisetB De tweede multiset.
-     * @return De cardinaliteit van het multiset-verschil.
+     * @param multisetA The first multiset.
+     * @param multisetB The second multiset.
+     * @return The cardinality of the difference.
      */
-    private int multisetDifferenceCardinality(Map<Character, Integer> multisetA,
-                                              Map<Character, Integer> multisetB) {
+    private int multisetDifferenceCardinality(Map<String, Integer> multisetA,
+                                              Map<String, Integer> multisetB) {
         int cardinality = 0;
-        for (Map.Entry<Character, Integer> entry : multisetA.entrySet()) {
-            char key = entry.getKey();
+        for (Map.Entry<String, Integer> entry : multisetA.entrySet()) {
+            String key = entry.getKey();
             int countA = entry.getValue();
             int countB = multisetB.getOrDefault(key, 0);
             cardinality += Math.max(0, countA - countB);

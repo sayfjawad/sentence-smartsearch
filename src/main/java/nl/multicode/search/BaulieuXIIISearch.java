@@ -1,40 +1,44 @@
 package nl.multicode.search;
 
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
 import nl.multicode.match.BaulieuXIII;
-
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Zoekt vergelijkbare zinnen op basis van de Baulieu XIII Distance.
+ * Searches for similar sentences based on the Baulieu XIII Distance.
  */
 @ApplicationScoped
 public class BaulieuXIIISearch implements Search {
 
-    @Inject
-    BaulieuXIII baulieuXIII;
+    private final BaulieuXIII baulieuXIII;
 
+    public BaulieuXIIISearch(BaulieuXIII baulieuXIII) {
+        this.baulieuXIII = baulieuXIII;
+    }
 
-    /**
-     * Vindt zinnen in de lijst die vergelijkbaar zijn met de zoekzin.
-     *
-     * @param searchSentence De zin waarmee wordt vergeleken.
-     * @param sentences      De lijst met zinnen om door te zoeken.
-     * @param threshold      De maximale toegestane Baulieu XIII Distance voor een match.
-     * @return Een lijst met vergelijkbare zinnen.
-     */
-    public List<String> findSimilarSentences(final String searchSentence,
-                                             final List<String> sentences,
-                                             final double threshold) {
-        return sentences.stream()
-                .filter(sentence -> baulieuXIII.compute(searchSentence, sentence) <= threshold)
-                .collect(Collectors.toList());
+    @Override
+    public String getAlgorithmName() {
+        return "BaulieuXIII";
     }
 
     @Override
     public List<String> search(String searchTerm, List<String> sentences) {
-        return findSimilarSentences(searchTerm, sentences, 0.5);
+        return sentences.stream()
+                .filter(sentence -> baulieuXIII.compute(searchTerm, sentence) >= computeThreshold(searchTerm))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Map.Entry<String, Double>> searchWithScores(String searchTerm, List<String> sentences) {
+        return sentences.stream()
+                .map(sentence -> Map.entry(sentence, baulieuXIII.compute(searchTerm, sentence)))
+                .sorted(Map.Entry.<String, Double>comparingByValue().reversed()) // Sort best matches first
+                .collect(Collectors.toList());
+    }
+
+    private double computeThreshold(String searchTerm) {
+        return Math.max(0.6, 1.0 - (searchTerm.length() * 0.02)); // Dynamic threshold
     }
 }

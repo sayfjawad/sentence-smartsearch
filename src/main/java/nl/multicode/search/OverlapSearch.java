@@ -4,38 +4,43 @@ import jakarta.enterprise.context.ApplicationScoped;
 import nl.multicode.match.Overlap;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * OverlapDistanceSearch gebruikt de Overlap-coëfficiënt om vergelijkbare zinnen te vinden.
+ * OverlapSearch gebruikt de Overlap-coëfficiënt om vergelijkbare zinnen te vinden.
  */
 @ApplicationScoped
 public class OverlapSearch implements Search {
+
     private final Overlap overlap;
 
-    /**
-     * Construeert een OverlapDistanceSearch-instantie met standaardparameters.
-     */
-    public OverlapSearch() {
-        this.overlap = new Overlap();
+    public OverlapSearch(Overlap overlap) {
+        this.overlap = overlap;
     }
 
-    /**
-     * Vindt zinnen in de lijst die een gelijkenisscore hebben die groter is dan of gelijk is aan de drempel.
-     *
-     * @param searchSentence de zin om te vergelijken
-     * @param sentences      de lijst met zinnen om door te zoeken
-     * @param threshold      de minimale gelijkenisscore vereist (in het bereik [0,1])
-     * @return een lijst met vergelijkbare zinnen
-     */
-    public List<String> findSimilarSentences(String searchSentence, List<String> sentences, double threshold) {
-        return sentences.stream()
-                .filter(sentence -> overlap.sim(searchSentence, sentence) >= threshold)
-                .collect(Collectors.toList());
+    @Override
+    public String getAlgorithmName() {
+        return "Overlap";
     }
 
     @Override
     public List<String> search(String searchTerm, List<String> sentences) {
-        return findSimilarSentences(searchTerm, sentences, 0.7);
+        return sentences.stream()
+                .filter(sentence -> overlap.sim(searchTerm, sentence) >= computeThreshold(searchTerm))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Map.Entry<String, Double>> searchWithScores(String searchTerm, List<String> sentences) {
+        return sentences.stream()
+                .map(sentence -> Map.entry(sentence, overlap.sim(searchTerm, sentence)))
+                .filter(entry -> entry.getValue() >= 0.5) // Filter out weak matches
+                .sorted(Map.Entry.<String, Double>comparingByValue().reversed()) // Sort by confidence
+                .collect(Collectors.toList());
+    }
+
+    private double computeThreshold(String searchTerm) {
+        return Math.max(0.5, 1.0 - (searchTerm.length() * 0.02)); // Adaptive threshold
     }
 }

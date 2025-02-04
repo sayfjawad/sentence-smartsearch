@@ -1,12 +1,11 @@
 package nl.multicode.match;
 
 import jakarta.enterprise.context.ApplicationScoped;
-
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
 /**
- * FuzzyWuzzyTokenSortDistance implements token sort similarity.
+ * FuzzyWuzzyTokenSort implements token sort similarity.
  * <p>
  * It tokenizes the input, sorts the tokens alphabetically, and then compares the sorted strings.
  * <p>
@@ -28,7 +27,7 @@ public class FuzzyWuzzyTokenSort {
      * @return The similarity score in the range [0,1].
      */
     public double sim(String src, String tar) {
-        if (src.equals(tar)) {
+        if (src.equalsIgnoreCase(tar)) {
             return 1.0;
         }
         if (src.isEmpty() || tar.isEmpty()) {

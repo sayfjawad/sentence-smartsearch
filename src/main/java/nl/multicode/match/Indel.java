@@ -3,61 +3,53 @@ package nl.multicode.match;
 import jakarta.enterprise.context.ApplicationScoped;
 
 /**
- * Implementeert de Indel Distance (alleen invoegingen en verwijderingen).
+ * Implements Indel Distance (insertions and deletions only).
  */
 @ApplicationScoped
 public class Indel {
 
     /**
-     * Berekent de Indel Distance tussen twee strings.
+     * Computes the Indel Distance between two strings.
      *
-     * @param src De bronstring.
-     * @param tar De doelstring.
-     * @return De Indel Distance tussen de twee strings.
+     * @param src The source string.
+     * @param tar The target string.
+     * @return The Indel Distance (number of insertions/deletions).
      */
     public int compute(String src, String tar) {
         final int[][] distanceMatrix = new int[src.length() + 1][tar.length() + 1];
 
-        initializeDistanceMatrix(src, tar, distanceMatrix);
-        fillDistanceMatrix(src, tar, distanceMatrix);
-
-        return distanceMatrix[src.length()][tar.length()];
-    }
-
-    /**
-     * Initialiseer de afstandsmatrix voor de Indel Distance-berekening.
-     *
-     * @param src             De bronstring.
-     * @param tar             De doelstring.
-     * @param distanceMatrix  De matrix om te initialiseren.
-     */
-    private void initializeDistanceMatrix(String src, String tar, int[][] distanceMatrix) {
         for (int i = 0; i <= src.length(); i++) {
             distanceMatrix[i][0] = i;
         }
         for (int j = 0; j <= tar.length(); j++) {
             distanceMatrix[0][j] = j;
         }
-    }
 
-    /**
-     * Vul de afstandsmatrix op basis van Indel Distance-regels.
-     *
-     * @param src             De bronstring.
-     * @param tar             De doelstring.
-     * @param distanceMatrix  De matrix die wordt gevuld.
-     */
-    private void fillDistanceMatrix(String src, String tar, int[][] distanceMatrix) {
         for (int i = 1; i <= src.length(); i++) {
             for (int j = 1; j <= tar.length(); j++) {
                 if (src.charAt(i - 1) == tar.charAt(j - 1)) {
-                    distanceMatrix[i][j] = distanceMatrix[i - 1][j - 1]; // Geen kosten bij gelijke tekens
+                    distanceMatrix[i][j] = distanceMatrix[i - 1][j - 1]; // No cost for matching chars
                 } else {
-                    int deletionCost = distanceMatrix[i - 1][j] + 1;
-                    int insertionCost = distanceMatrix[i][j - 1] + 1;
-                    distanceMatrix[i][j] = Math.min(deletionCost, insertionCost); // Minimaal van insertie of deletie
+                    distanceMatrix[i][j] = Math.min(
+                            distanceMatrix[i - 1][j] + 1, // Deletion
+                            distanceMatrix[i][j - 1] + 1  // Insertion
+                    );
                 }
             }
         }
+
+        return distanceMatrix[src.length()][tar.length()];
+    }
+
+    /**
+     * Computes the normalized similarity score between two strings.
+     *
+     * @param src The source string.
+     * @param tar The target string.
+     * @return A similarity score between 0 (completely different) and 1 (identical).
+     */
+    public double computeNormalized(String src, String tar) {
+        int distance = compute(src, tar);
+        return 1.0 - ((double) distance / Math.max(src.length(), tar.length()));
     }
 }

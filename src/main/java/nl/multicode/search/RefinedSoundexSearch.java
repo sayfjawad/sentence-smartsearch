@@ -4,6 +4,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import nl.multicode.match.RefinedSoundex;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -14,35 +15,36 @@ public class RefinedSoundexSearch implements Search {
 
     private final RefinedSoundex soundex;
 
-    /**
-     * Constructs a RefinedSoundexSearch instance.
-     */
-    public RefinedSoundexSearch() {
-        this.soundex = new RefinedSoundex();
+    public RefinedSoundexSearch(RefinedSoundex soundex) {
+        this.soundex = soundex;
     }
 
-    /**
-     * Finds sentences in the list with the same Refined Soundex code.
-     *
-     * @param searchSentence The input sentence
-     * @param sentences      The list of sentences to search in
-     * @param threshold      The minimum similarity score
-     * @return The list of matching sentences
-     */
-    public List<String> findSimilarSentences(String searchSentence, List<String> sentences, double threshold) {
-        String searchCode = soundex.encode(searchSentence);
+    @Override
+    public String getAlgorithmName() {
+        return "RefinedSoundex";
+    }
+
+    @Override
+    public List<String> search(String searchTerm, List<String> sentences) {
         return sentences.stream()
-                .filter(sentence -> getSimilarityScore(searchCode, soundex.encode(sentence)) >= threshold)
+                .filter(sentence -> getSimilarityScore(soundex.encode(searchTerm), soundex.encode(sentence)) >= computeThreshold(searchTerm))
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Computes a similarity score between two Soundex codes.
-     *
-     * @param code1 First code
-     * @param code2 Second code
-     * @return Similarity score (0 to 1)
-     */
+    @Override
+    public List<Map.Entry<String, Double>> searchWithScores(String searchTerm, List<String> sentences) {
+        String searchCode = soundex.encode(searchTerm);
+        return sentences.stream()
+                .map(sentence -> Map.entry(sentence, getSimilarityScore(searchCode, soundex.encode(sentence))))
+                .filter(entry -> entry.getValue() >= 0.4) // Filter out weak matches
+                .sorted(Map.Entry.<String, Double>comparingByValue().reversed()) // Sort by highest similarity
+                .collect(Collectors.toList());
+    }
+
+    private double computeThreshold(String searchTerm) {
+        return Math.max(0.4, 1.0 - (searchTerm.length() * 0.02)); // Adaptive threshold
+    }
+
     private double getSimilarityScore(String code1, String code2) {
         int minLength = Math.min(code1.length(), code2.length());
         int common = 0;
@@ -52,10 +54,5 @@ public class RefinedSoundexSearch implements Search {
             }
         }
         return (double) common / Math.max(code1.length(), code2.length());
-    }
-
-    @Override
-    public List<String> search(String searchTerm, List<String> sentences) {
-        return findSimilarSentences(searchTerm, sentences, 0.5);
     }
 }

@@ -1,12 +1,11 @@
 package nl.multicode.match;
 
 import jakarta.enterprise.context.ApplicationScoped;
-
 import java.util.HashSet;
 import java.util.Set;
 
 /**
- * ClementSimilarity implements the Clement similarity measure.
+ * Implements the Clement similarity measure.
  * <p>
  * Clement similarity is computed as:
  * <pre>
@@ -14,26 +13,26 @@ import java.util.Set;
  *     (|X ∩ Y| / |X|) * (1 - |X| / |N|) +
  *     (|(N - X) - Y| / |N - X|) * (1 - |N - X| / |N|)
  * </pre>
- * where N is the set of all unique tokens in the comparison.
+ * where N is the set of all unique words in the comparison.
  */
 @ApplicationScoped
 public class Clement {
 
     /**
-     * Returns the Clement similarity between two strings.
+     * Computes the Clement similarity between two strings.
      *
      * @param src the source string
      * @param tar the target string
      * @return the similarity score in the range [0,1]
      */
     public double sim(String src, String tar) {
-        if (src.equals(tar)) {
+        if (src.equalsIgnoreCase(tar)) {
             return 1.0;
         }
 
-        Set<Character> srcSet = tokenize(src);
-        Set<Character> tarSet = tokenize(tar);
-        Set<Character> population = new HashSet<>(srcSet);
+        Set<String> srcSet = tokenize(src);
+        Set<String> tarSet = tokenize(tar);
+        Set<String> population = new HashSet<>(srcSet);
         population.addAll(tarSet); // N is the union of both sets
 
         int a = intersectionSize(srcSet, tarSet);
@@ -54,15 +53,15 @@ public class Clement {
     }
 
     /**
-     * Tokenizes a string into a set of unique characters.
+     * Tokenizes a string into a set of unique words.
      *
      * @param str the input string
-     * @return a set of unique characters
+     * @return a set of unique words
      */
-    private Set<Character> tokenize(String str) {
-        Set<Character> tokens = new HashSet<>();
-        for (char c : str.toCharArray()) {
-            tokens.add(c);
+    private Set<String> tokenize(String str) {
+        Set<String> tokens = new HashSet<>();
+        for (String word : str.toLowerCase().split("\\s+")) {
+            tokens.add(word);
         }
         return tokens;
     }
@@ -74,8 +73,8 @@ public class Clement {
      * @param set2 the second set
      * @return the number of elements in the intersection
      */
-    private int intersectionSize(Set<Character> set1, Set<Character> set2) {
-        Set<Character> intersection = new HashSet<>(set1);
+    private int intersectionSize(Set<String> set1, Set<String> set2) {
+        Set<String> intersection = new HashSet<>(set1);
         intersection.retainAll(set2);
         return intersection.size();
     }

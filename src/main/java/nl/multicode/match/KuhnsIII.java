@@ -1,34 +1,27 @@
 package nl.multicode.match;
 
 import jakarta.enterprise.context.ApplicationScoped;
-
 import java.util.HashSet;
 import java.util.Set;
 
 /**
- * KuhnsIIIDistance implements Kuhns III correlation.
- * <p>
- * The formula follows:
- * <pre>
- *     corr_KuhnsIII(X, Y) =
- *     δ(X, Y) / ((1 - |X ∩ Y| / (|X| + |Y|)) * (|X| + |Y| - |X|*|Y| / |N|))
- * </pre>
+ * KuhnsIII implements Kuhns III correlation for character similarity.
  */
 @ApplicationScoped
 public class KuhnsIII {
 
     /**
-     * Returns the Kuhns III correlation between two strings.
+     * Computes the Kuhns III correlation between two strings.
      *
-     * @param src the source string
-     * @param tar the target string
-     * @return the correlation score
+     * @param src The source string
+     * @param tar The target string
+     * @return The correlation score
      */
     public double corr(String src, String tar) {
         Set<Character> srcSet = tokenize(src);
         Set<Character> tarSet = tokenize(tar);
         Set<Character> population = new HashSet<>(srcSet);
-        population.addAll(tarSet); // N is the unique character set from both strings.
+        population.addAll(tarSet); // N = total unique characters
 
         int a = intersectionSize(srcSet, tarSet);
         int b = srcSet.size() - a;
@@ -45,11 +38,11 @@ public class KuhnsIII {
     }
 
     /**
-     * Returns the Kuhns III similarity between two strings.
+     * Computes the Kuhns III similarity score.
      *
-     * @param src the source string
-     * @param tar the target string
-     * @return the similarity score in the range [0,1]
+     * @param src The source string
+     * @param tar The target string
+     * @return The similarity score in the range [0,1]
      */
     public double sim(String src, String tar) {
         return (1.0 / 3.0 + corr(src, tar)) / (4.0 / 3.0);
@@ -58,8 +51,8 @@ public class KuhnsIII {
     /**
      * Tokenizes a string into a set of unique characters.
      *
-     * @param str the input string
-     * @return a set of unique characters
+     * @param str The input string
+     * @return A set of unique characters
      */
     private Set<Character> tokenize(String str) {
         Set<Character> tokens = new HashSet<>();
@@ -72,9 +65,9 @@ public class KuhnsIII {
     /**
      * Computes the intersection size of two sets.
      *
-     * @param set1 the first set
-     * @param set2 the second set
-     * @return the number of elements in the intersection
+     * @param set1 The first set
+     * @param set2 The second set
+     * @return The number of elements in the intersection
      */
     private int intersectionSize(Set<Character> set1, Set<Character> set2) {
         Set<Character> intersection = new HashSet<>(set1);

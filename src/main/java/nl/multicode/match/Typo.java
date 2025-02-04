@@ -6,10 +6,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * TypoDistance implements a typo-aware edit distance based on keyboard proximity.
+ * Implements a typo-aware edit distance based on keyboard proximity.
  * <p>
- * The similarity is computed by assigning lower costs for substitutions
- * between characters that are close on the keyboard.
+ * This similarity measure assigns lower costs for substitutions
+ * between characters that are close on a QWERTY keyboard.
  * </p>
  */
 @ApplicationScoped
@@ -54,9 +54,9 @@ public class Typo {
     /**
      * Computes the Typo similarity between two strings.
      *
-     * @param src the source string
-     * @param tar the target string
-     * @return the similarity score in the range [0,1]
+     * @param src The source string.
+     * @param tar The target string.
+     * @return The similarity score in the range [0,1].
      */
     public double sim(String src, String tar) {
         if (src.equalsIgnoreCase(tar)) {
@@ -98,18 +98,14 @@ public class Typo {
         if (c1 == c2) {
             return MATCH_COST;
         }
-        if (isNearbyKey(c1, c2)) {
-            return NEARBY_KEY_COST;
-        }
-        return MISMATCH_COST;
+        return isNearbyKey(c1, c2) ? NEARBY_KEY_COST : MISMATCH_COST;
     }
 
     /**
      * Checks if two characters are close on the keyboard.
      */
     private boolean isNearbyKey(char c1, char c2) {
-        String neighbors = QWERTY_NEIGHBORS.getOrDefault(c1, "");
-        return neighbors.indexOf(c2) >= 0;
+        return QWERTY_NEIGHBORS.getOrDefault(c1, "").indexOf(c2) >= 0;
     }
 
     /**

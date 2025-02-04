@@ -1,19 +1,13 @@
 package nl.multicode.match;
 
 import jakarta.enterprise.context.ApplicationScoped;
-
-import java.util.Arrays;
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 /**
- * EditexDistance implements Editex similarity, a phonetic edit distance.
- * <p>
- * Editex combines phonetic and edit distance calculations.
- * <p>
- * The similarity is computed by assigning lower costs for substitutions
- * between characters in the same phonetic group.
- * </p>
+ * Editex implements a phonetic edit distance similarity measure.
+ * Assigns lower costs for substitutions between characters in the same phonetic group.
  */
 @ApplicationScoped
 public class Editex {
@@ -22,24 +16,20 @@ public class Editex {
     private static final int SAME_GROUP_COST = 1;
     private static final int MISMATCH_COST = 2;
 
-    private static final Set<Set<Character>> LETTER_GROUPS = new HashSet<>(Arrays.asList(
-            Set.of('A', 'E', 'I', 'O', 'U', 'Y'),
-            Set.of('B', 'P'),
-            Set.of('C', 'K', 'Q'),
-            Set.of('D', 'T'),
-            Set.of('L', 'R'),
-            Set.of('M', 'N'),
-            Set.of('G', 'J'),
-            Set.of('F', 'V'),
-            Set.of('S', 'X', 'Z')
-    ));
-
-    private static final Set<Character> ALL_LETTERS = new HashSet<>();
+    private static final Map<Character, Integer> LETTER_GROUP_MAP = new HashMap<>();
 
     static {
-        for (Set<Character> group : LETTER_GROUPS) {
-            ALL_LETTERS.addAll(group);
-        }
+        Set.of(
+                Set.of('A', 'E', 'I', 'O', 'U', 'Y'),
+                Set.of('B', 'P'),
+                Set.of('C', 'K', 'Q'),
+                Set.of('D', 'T'),
+                Set.of('L', 'R'),
+                Set.of('M', 'N'),
+                Set.of('G', 'J'),
+                Set.of('F', 'V'),
+                Set.of('S', 'X', 'Z')
+        ).forEach(group -> group.forEach(c -> LETTER_GROUP_MAP.put(c, LETTER_GROUP_MAP.size())));
     }
 
     /**
@@ -59,7 +49,6 @@ public class Editex {
 
         int srcLen = src.length();
         int tarLen = tar.length();
-
         int[][] dp = new int[srcLen + 1][tarLen + 1];
 
         for (int i = 0; i <= srcLen; i++) {
@@ -89,22 +78,9 @@ public class Editex {
         if (c1 == c2) {
             return MATCH_COST;
         }
-        if (belongsToSameGroup(c1, c2)) {
-            return SAME_GROUP_COST;
-        }
-        return MISMATCH_COST;
-    }
-
-    /**
-     * Checks if two characters belong to the same phonetic group.
-     */
-    private boolean belongsToSameGroup(char c1, char c2) {
-        for (Set<Character> group : LETTER_GROUPS) {
-            if (group.contains(c1) && group.contains(c2)) {
-                return true;
-            }
-        }
-        return false;
+        return LETTER_GROUP_MAP.getOrDefault(c1, -1).equals(LETTER_GROUP_MAP.getOrDefault(c2, -2))
+                ? SAME_GROUP_COST
+                : MISMATCH_COST;
     }
 
     /**

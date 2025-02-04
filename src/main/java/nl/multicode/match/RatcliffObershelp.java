@@ -3,29 +3,25 @@ package nl.multicode.match;
 import jakarta.enterprise.context.ApplicationScoped;
 
 /**
- * RatcliffObershelpDistance implements the Ratcliff-Obershelp similarity measure.
+ * RatcliffObershelp implementeert de Ratcliff-Obershelp gelijkenis.
  * <p>
- * The similarity is computed as:
+ * De gelijkenis wordt berekend als:
  * <pre>
- *     similarity = (2 * sum of matching substrings) / (length(src) + length(tar))
+ *     similarity = (2 * som van overeenkomende substrings) / (length(src) + length(tar))
  * </pre>
- * where the longest common substring (LCS) is found and then applied recursively
- * on the remaining left and right substrings.
- * </p>
  */
 @ApplicationScoped
-
 public class RatcliffObershelp {
 
     /**
-     * Computes the Ratcliff-Obershelp similarity between two strings.
+     * Berekent de Ratcliff-Obershelp gelijkenis tussen twee strings.
      *
-     * @param src The source string.
-     * @param tar The target string.
-     * @return The similarity score in the range [0,1].
+     * @param src De bronstring.
+     * @param tar De doelstring.
+     * @return De gelijkenisscore in het bereik [0,1].
      */
     public double sim(String src, String tar) {
-        if (src.equals(tar)) {
+        if (src.equalsIgnoreCase(tar)) {
             return 1.0;
         }
         if (src.isEmpty() || tar.isEmpty()) {
@@ -37,11 +33,11 @@ public class RatcliffObershelp {
     }
 
     /**
-     * Finds the sum of all matching substring lengths recursively.
+     * Vindt de som van alle overeenkomende substringlengtes recursief.
      *
-     * @param src The source string.
-     * @param tar The target string.
-     * @return The sum of substring match lengths.
+     * @param src De bronstring.
+     * @param tar De doelstring.
+     * @return De som van substring matchlengtes.
      */
     private int substringMatches(String src, String tar) {
         LcsMatch lcsMatch = findLcs(src, tar);
@@ -55,11 +51,11 @@ public class RatcliffObershelp {
     }
 
     /**
-     * Finds the longest common substring (LCS) between two strings.
+     * Vindt de langste gemeenschappelijke substring (LCS) tussen twee strings.
      *
-     * @param src The source string.
-     * @param tar The target string.
-     * @return The LCS match data (start positions and length).
+     * @param src De bronstring.
+     * @param tar De doelstring.
+     * @return De LCS matchdata (startposities en lengte).
      */
     private LcsMatch findLcs(String src, String tar) {
         int[][] dp = new int[src.length() + 1][tar.length() + 1];
@@ -83,7 +79,7 @@ public class RatcliffObershelp {
     }
 
     /**
-     * Helper class to store LCS match data.
+     * Helper klasse om LCS matchdata op te slaan.
      */
     private static class LcsMatch {
         final int srcStart;

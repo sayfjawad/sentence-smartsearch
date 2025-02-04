@@ -6,19 +6,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * SSKDistance implements the String Subsequence Kernel similarity.
+ * Implements the String Subsequence Kernel (SSK) similarity measure.
  */
 @ApplicationScoped
-
 public class SSK {
 
-    private final double sskLambda;
+    private static final double DEFAULT_LAMBDA = 0.9;
+    private final double lambda;
 
-    /**
-     * Constructs an SSKDistance instance with default lambda = 0.9.
-     */
     public SSK() {
-        this.sskLambda = 0.9;
+        this.lambda = DEFAULT_LAMBDA;
+    }
+
+    public SSK(double lambda) {
+        this.lambda = lambda;
     }
 
     /**
@@ -43,8 +44,8 @@ public class SSK {
             }
         }
 
-        double srcNorm = Math.sqrt(srcTokens.values().stream().mapToDouble(v -> v * v).sum());
-        double tarNorm = Math.sqrt(tarTokens.values().stream().mapToDouble(v -> v * v).sum());
+        double srcNorm = computeNorm(srcTokens);
+        double tarNorm = computeNorm(tarTokens);
 
         return (srcNorm == 0 || tarNorm == 0) ? 0.0 : score / (srcNorm * tarNorm);
     }
@@ -66,5 +67,15 @@ public class SSK {
             }
         }
         return tokens;
+    }
+
+    /**
+     * Computes the norm value for SSK similarity calculation.
+     *
+     * @param tokenMap The map of token frequencies.
+     * @return The computed norm value.
+     */
+    private double computeNorm(Map<String, Integer> tokenMap) {
+        return Math.sqrt(tokenMap.values().stream().mapToDouble(v -> v * v).sum());
     }
 }

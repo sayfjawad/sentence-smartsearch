@@ -6,20 +6,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Implementeert de Bag Distance voor het vergelijken van strings.
+ * Implements the Bag Distance for string similarity comparison.
  */
 @ApplicationScoped
 public class Bag {
 
     /**
-     * Berekent de Bag Distance tussen twee strings.
+     * Computes the Bag Distance between two strings.
      *
-     * @param src De bronstring.
-     * @param tar De doelstring.
-     * @return De Bag Distance tussen de twee strings.
+     * @param src The source string.
+     * @param tar The target string.
+     * @return The Bag Distance between the two strings.
      */
     public int compute(String src, String tar) {
-        if (tar.equals(src)) {
+        if (tar.equalsIgnoreCase(src)) {
             return 0;
         } else if (src.isEmpty()) {
             return tar.length();
@@ -27,44 +27,41 @@ public class Bag {
             return src.length();
         }
 
-        // Maak multisets (bags) voor de bron- en doelstrings
-        Map<Character, Integer> srcBag = createMultiset(src);
-        Map<Character, Integer> tarBag = createMultiset(tar);
+        Map<String, Integer> srcBag = createWordBag(src);
+        Map<String, Integer> tarBag = createWordBag(tar);
 
-        // Bereken het verschil tussen de multisets
         int srcOnlyCard = multisetDifferenceCardinality(srcBag, tarBag);
         int tarOnlyCard = multisetDifferenceCardinality(tarBag, srcBag);
 
-        // De Bag Distance is het maximum van de twee verschillen
         return Math.max(srcOnlyCard, tarOnlyCard);
     }
 
     /**
-     * Maakt een multiset (bag) van een string.
+     * Creates a word-based multiset (bag) from a string.
      *
-     * @param str De invoerstring.
-     * @return Een map die de multiset vertegenwoordigt.
+     * @param str The input string.
+     * @return A map representing the word multiset.
      */
-    private Map<Character, Integer> createMultiset(String str) {
-        Map<Character, Integer> multiset = new HashMap<>();
-        for (char c : str.toCharArray()) {
-            multiset.put(c, multiset.getOrDefault(c, 0) + 1);
+    private Map<String, Integer> createWordBag(String str) {
+        Map<String, Integer> multiset = new HashMap<>();
+        for (String word : str.toLowerCase().split("\\s+")) {
+            multiset.put(word, multiset.getOrDefault(word, 0) + 1);
         }
         return multiset;
     }
 
     /**
-     * Berekent de cardinaliteit van het verschil tussen twee multisets (A - B).
+     * Computes the cardinality of the difference between two multisets.
      *
-     * @param multisetA De eerste multiset.
-     * @param multisetB De tweede multiset.
-     * @return De cardinaliteit van het verschil tussen de multisets.
+     * @param multisetA The first multiset.
+     * @param multisetB The second multiset.
+     * @return The cardinality of the difference.
      */
-    private int multisetDifferenceCardinality(Map<Character, Integer> multisetA,
-                                              Map<Character, Integer> multisetB) {
+    private int multisetDifferenceCardinality(Map<String, Integer> multisetA,
+                                              Map<String, Integer> multisetB) {
         int cardinality = 0;
-        for (Map.Entry<Character, Integer> entry : multisetA.entrySet()) {
-            char key = entry.getKey();
+        for (Map.Entry<String, Integer> entry : multisetA.entrySet()) {
+            String key = entry.getKey();
             int countA = entry.getValue();
             int countB = multisetB.getOrDefault(key, 0);
             cardinality += Math.max(0, countA - countB);

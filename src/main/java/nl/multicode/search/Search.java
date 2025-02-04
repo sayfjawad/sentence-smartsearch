@@ -1,12 +1,10 @@
 package nl.multicode.search;
 
 import java.util.List;
+import java.util.Map;
 
 public interface Search {
-
+    String getAlgorithmName();
     List<String> search(String searchTerm, List<String> sentences);
-
-    default String getAlgorithmName() {
-        return this.getClass().getSimpleName().replace("Search", ""); // Remove "Search" suffix
-    }
+    List<Map.Entry<String, Double>> searchWithScores(String searchTerm, List<String> sentences);
 }

@@ -1,14 +1,13 @@
 package nl.multicode.match;
 
 import jakarta.enterprise.context.ApplicationScoped;
-
 import java.util.Arrays;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 /**
- * FuzzyWuzzyTokenSetDistance implements a tokenized set-based similarity search.
+ * FuzzyWuzzyTokenSet implements a tokenized set-based similarity search.
  * <p>
  * The similarity is computed by tokenizing the strings, sorting tokens, and comparing:
  * <pre>
@@ -28,7 +27,7 @@ public class FuzzyWuzzyTokenSet {
      * @return The similarity score in the range [0,1].
      */
     public double sim(String src, String tar) {
-        if (src.equals(tar)) {
+        if (src.equalsIgnoreCase(tar)) {
             return 1.0;
         }
         if (src.isEmpty() || tar.isEmpty()) {

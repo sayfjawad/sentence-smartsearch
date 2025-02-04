@@ -1,60 +1,61 @@
 package nl.multicode.match;
 
 import jakarta.enterprise.context.ApplicationScoped;
-
 import java.util.HashSet;
 import java.util.Set;
 
 /**
- * DiceAsymmetricIDistance implements Dice's Asymmetric I distance.
+ * Implements Dice's Asymmetric I similarity measure.
+ *
  * <p>
- * This similarity measure is defined as:
+ * The similarity score is calculated as:
  * <pre>
  *     sim_DiceAsymmetricI(X, Y) = |X ∩ Y| / |X|
  * </pre>
- * where X and Y are the tokenized sets of characters.
+ * where X and Y are the tokenized sets of character bigrams.
  * </p>
  */
 @ApplicationScoped
 public class DiceAsymmetricI {
 
     /**
-     * Returns the Dice Asymmetric I similarity between two strings.
+     * Computes the Dice Asymmetric I similarity between two strings.
      *
      * @param src the source string
      * @param tar the target string
      * @return the similarity score in the range [0,1]
      */
-    public double sim(String src, String tar) {
-        if (src.equals(tar)) {
+    public double computeSimilarity(String src, String tar) {
+        if (src.equalsIgnoreCase(tar)) {
             return 1.0;
         }
-
-        Set<Character> srcSet = tokenize(src);
-        Set<Character> tarSet = tokenize(tar);
-
-        int intersection = intersectionSize(srcSet, tarSet);
-        int srcSize = srcSet.size();
-
-        if (intersection == 0) {
+        if (src.isEmpty() || tar.isEmpty()) {
             return 0.0;
         }
 
-        return (double) intersection / srcSize;
+        Set<String> srcSet = generateBigrams(src);
+        Set<String> tarSet = generateBigrams(tar);
+
+        int intersection = computeIntersectionSize(srcSet, tarSet);
+        int srcSize = srcSet.size();
+
+        return (srcSize == 0) ? 0.0 : (double) intersection / srcSize;
     }
 
     /**
-     * Tokenizes a string into a set of unique characters.
+     * Generates bigrams from a string.
      *
      * @param str the input string
-     * @return a set of unique characters
+     * @return a set of bigrams
      */
-    private Set<Character> tokenize(String str) {
-        Set<Character> tokens = new HashSet<>();
-        for (char c : str.toCharArray()) {
-            tokens.add(c);
+    private Set<String> generateBigrams(String str) {
+        Set<String> bigrams = new HashSet<>();
+        str = str.toLowerCase().replaceAll("[^a-z]", ""); // Normalize input
+
+        for (int i = 0; i < str.length() - 1; i++) {
+            bigrams.add(str.substring(i, i + 2));
         }
-        return tokens;
+        return bigrams;
     }
 
     /**
@@ -62,10 +63,10 @@ public class DiceAsymmetricI {
      *
      * @param set1 the first set
      * @param set2 the second set
-     * @return the number of elements in the intersection
+     * @return the number of common elements
      */
-    private int intersectionSize(Set<Character> set1, Set<Character> set2) {
-        Set<Character> intersection = new HashSet<>(set1);
+    private int computeIntersectionSize(Set<String> set1, Set<String> set2) {
+        Set<String> intersection = new HashSet<>(set1);
         intersection.retainAll(set2);
         return intersection.size();
     }

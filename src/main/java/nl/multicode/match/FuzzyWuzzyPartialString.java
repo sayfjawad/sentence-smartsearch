@@ -1,52 +1,41 @@
 package nl.multicode.match;
 
 import jakarta.enterprise.context.ApplicationScoped;
-
 import java.util.stream.IntStream;
+import java.util.Map;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
- * FuzzyWuzzyPartialStringDistance implements a substring similarity search.
- * <p>
+ * Implements FuzzyWuzzy Partial String similarity.
  * It slides the smaller string over the larger one and finds the best possible match.
- * <p>
- * The similarity is computed as:
- * <pre>
- *     similarity = max( (matching characters) / max(len(src), len(substring)) )
- * </pre>
- * where "substring" refers to all possible substrings of the larger string that match the length of the smaller one.
- * </p>
  */
 @ApplicationScoped
 public class FuzzyWuzzyPartialString {
 
     /**
-     * Computes the FuzzyWuzzy Partial String similarity between two strings.
+     * Computes the similarity between two strings using character matches.
      *
      * @param src The source string (typically the shorter one).
      * @param tar The target string (typically the longer one).
      * @return The similarity score in the range [0,1].
      */
     public double sim(String src, String tar) {
-        if (src.equals(tar)) {
+        if (src.equalsIgnoreCase(tar)) {
             return 1.0;
         }
         if (src.isEmpty() || tar.isEmpty()) {
             return 0.0;
         }
 
+        // Ensure src is always the smaller string
         if (src.length() > tar.length()) {
-            String temp = src;
-            src = tar;
-            tar = temp;
+            return sim(tar, src);
         }
 
-        final int maxLen = src.length();
-        final var srcString = src;
-        final var tarString = tar;
-
-
-        return IntStream.rangeClosed(0, tar.length() - maxLen)
-                .mapToDouble(start -> computeSimilarity(srcString, tarString.substring(start, start + maxLen)))
+        final int srcLen = src.length();
+        return IntStream.rangeClosed(0, tar.length() - srcLen)
+                .mapToDouble(start -> computeSimilarity(src, tar.substring(start, start + srcLen)))
                 .max()
                 .orElse(0.0);
     }
@@ -59,12 +48,9 @@ public class FuzzyWuzzyPartialString {
      * @return The similarity score.
      */
     private double computeSimilarity(String s1, String s2) {
-        int matches = 0;
-        for (int i = 0; i < s1.length(); i++) {
-            if (s1.charAt(i) == s2.charAt(i)) {
-                matches++;
-            }
-        }
+        long matches = IntStream.range(0, s1.length())
+                .filter(i -> s1.charAt(i) == s2.charAt(i))
+                .count();
         return (double) matches / s1.length();
     }
 }

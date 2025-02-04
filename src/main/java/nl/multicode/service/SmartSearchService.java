@@ -2,13 +2,14 @@ package nl.multicode.service;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Instance;
+import lombok.extern.slf4j.Slf4j;
 import nl.multicode.search.Search;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+@Slf4j
 @ApplicationScoped
 public class SmartSearchService {
 
@@ -18,31 +19,47 @@ public class SmartSearchService {
         this.searchAlgorithms = searchAlgorithms;
     }
 
-    public Map<String, List<String>> performSearch(final String searchTerm, final String largeText) {
-        // Generate overlapping windows from large text
-        List<String> windowSubstrings = generateSlidingWindows(largeText);
+    public Map<String, List<Map.Entry<String, Double>>> performSearch(final String searchTerm, final String largeText) {
+        int searchTermWordCount = searchTerm.split("\\s+").length;
+        List<String> tokens = tokenizeText(largeText, searchTermWordCount);
 
-        // Perform search over all window substrings
         return searchAlgorithms.stream()
                 .collect(Collectors.toMap(
-                        Search::getAlgorithmName, // Algorithm name as key
-                        algorithm -> algorithm.search(searchTerm, windowSubstrings) // Search in each window
+                        Search::getAlgorithmName,
+                        algorithm -> algorithm.searchWithScores(searchTerm, tokens).stream()
+                                .filter(entry -> entry.getValue() >= getMinimumThreshold(algorithm.getAlgorithmName()))
+                                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                                .limit(2) // Return top 5 matches per algorithm
+                                .collect(Collectors.toList())
                 ));
     }
 
-    private List<String> generateSlidingWindows(String text) {
-        int textLength = text.length();
 
-        // Define window size as 20% of the total text length (minimum 10, max capped)
-        int windowSize = Math.max(10, textLength / 5);
 
-        // Define step size as 50% of the window size (ensuring overlap)
-        int stepSize = Math.max(5, windowSize / 2);
+    private double getMinimumThreshold(String algorithm) {
+        return switch (algorithm) {
+            case "RefinedSoundex", "DoubleMetaphone", "TypoDistance" -> 0.2; // More phonetic tolerance
+            case "LevenshteinDistance", "Editex", "RatcliffObershelp" -> 0.6; // Medium strict
+            default -> 0.5; // default strictness
+        };
+    }
 
-        return IntStream.iterate(0, i -> i + stepSize)
-                .limit((textLength - windowSize) / stepSize + 1)
-                .mapToObj(start -> text.substring(start, Math.min(start + windowSize, textLength)))
-                .collect(Collectors.toList());
+    private List<String> tokenizeText(String text, int searchTermWordCount) {
+        List<String> words = Arrays.asList(text.toLowerCase().split("\\s+"));
+        List<String> ngrams = new ArrayList<>(words);
+
+        int maxNgramSize = Math.min(words.size(), searchTermWordCount * 2); // Adaptive n-grams
+
+        // Generate n-grams dynamically based on search term length
+        for (int n = 2; n <= maxNgramSize; n++) { // Start from bigrams (n=2)
+            final int finalN = n;
+            IntStream.range(0, words.size() - finalN + 1)
+                    .mapToObj(i -> String.join(" ", words.subList(i, i + finalN)))
+                    .forEach(ngrams::add);
+        }
+
+        log.info("Generated n-grams: " + ngrams);
+        return ngrams;
     }
 
 }

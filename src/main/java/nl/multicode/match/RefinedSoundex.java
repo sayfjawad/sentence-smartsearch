@@ -1,7 +1,6 @@
 package nl.multicode.match;
 
 import jakarta.enterprise.context.ApplicationScoped;
-
 import java.util.HashMap;
 import java.util.Map;
 

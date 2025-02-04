@@ -1,12 +1,11 @@
 package nl.multicode.match;
 
 import jakarta.enterprise.context.ApplicationScoped;
-
 import java.util.HashSet;
 import java.util.Set;
 
 /**
- * OverlapDistance implementeert de Overlap-coëfficiënt.
+ * Overlap implementeert de Overlap-coëfficiënt.
  * <p>
  * De formule is gedefinieerd als:
  * <pre>
@@ -25,14 +24,14 @@ public class Overlap {
      * @return de gelijkenisscore in het bereik [0,1]
      */
     public double sim(String src, String tar) {
-        if (src.equals(tar)) {
+        if (src.equalsIgnoreCase(tar)) {
             return 1.0;
         }
 
         Set<Character> srcSet = tokenize(src);
         Set<Character> tarSet = tokenize(tar);
 
-        int intersectionSize = intersectionSize(srcSet, tarSet);
+        int intersectionSize = computeIntersectionSize(srcSet, tarSet);
         int minSize = Math.min(srcSet.size(), tarSet.size());
 
         return (minSize == 0) ? 0.0 : (double) intersectionSize / minSize;
@@ -59,7 +58,7 @@ public class Overlap {
      * @param set2 de tweede set
      * @return het aantal gemeenschappelijke elementen in de intersectie
      */
-    private int intersectionSize(Set<Character> set1, Set<Character> set2) {
+    private int computeIntersectionSize(Set<Character> set1, Set<Character> set2) {
         Set<Character> intersection = new HashSet<>(set1);
         intersection.retainAll(set2);
         return intersection.size();

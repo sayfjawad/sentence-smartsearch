@@ -4,41 +4,46 @@ import jakarta.enterprise.context.ApplicationScoped;
 import nl.multicode.match.LevenshteinDistance;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Zoekt vergelijkbare zinnen op basis van de Levenshtein-afstand.
+ * Searches for similar sentences based on Levenshtein distance.
  */
 @ApplicationScoped
 public class LevenshteinDistanceSearch implements Search {
 
     private final LevenshteinDistance levenshteinDistance;
 
-    /**
-     * Constructor met een externe LevenshteinDistance-instantie (voor testbaarheid).
-     */
     public LevenshteinDistanceSearch(LevenshteinDistance levenshteinDistance) {
         this.levenshteinDistance = levenshteinDistance;
     }
 
-    /**
-     * Vindt zinnen in de lijst die vergelijkbaar zijn met de zoekzin.
-     *
-     * @param searchSentence De zin waarmee wordt vergeleken.
-     * @param sentences      De lijst met zinnen om door te zoeken.
-     * @param threshold      De maximale toegestane Levenshtein-afstand voor een match.
-     * @return Een lijst met vergelijkbare zinnen.
-     */
-    public List<String> findSimilarSentences(final String searchSentence,
-                                             final List<String> sentences,
-                                             final int threshold) {
-        return sentences.stream()
-                .filter(sentence -> levenshteinDistance.dist(searchSentence, sentence) <= threshold)
-                .collect(Collectors.toList());
+    @Override
+    public String getAlgorithmName() {
+        return "LevenshteinDistance";
     }
 
     @Override
     public List<String> search(String searchTerm, List<String> sentences) {
-        return findSimilarSentences(searchTerm, sentences, 3);
+        return sentences.stream()
+                .filter(sentence -> levenshteinDistance.dist(searchTerm, sentence) <= computeThreshold(searchTerm))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Map.Entry<String, Double>> searchWithScores(String searchTerm, List<String> sentences) {
+        return sentences.stream()
+                .map(sentence -> Map.entry(sentence, computeScore(searchTerm, sentence)))
+                .collect(Collectors.toList());
+    }
+
+    private int computeThreshold(String searchTerm) {
+        return Math.max(1, searchTerm.length() / 5); // 20% of search term length
+    }
+
+    private double computeScore(String searchTerm, String sentence) {
+        int distance = levenshteinDistance.dist(searchTerm, sentence);
+        return 1.0 - ((double) distance / Math.max(searchTerm.length(), sentence.length())); // Normalize score
     }
 }

@@ -5,10 +5,11 @@ import jakarta.inject.Inject;
 import nl.multicode.match.LIG3;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * LIG3DistanceSearch finds similar sentences based on LIG3 similarity.
+ * LIG3Search finds similar sentences based on LIG3 similarity.
  */
 @ApplicationScoped
 public class LIG3Search implements Search {
@@ -20,23 +21,28 @@ public class LIG3Search implements Search {
         this.lig3 = lig3;
     }
 
-
-    /**
-     * Finds sentences in the given list that have a similarity greater than or equal to the threshold.
-     *
-     * @param searchSentence the sentence to compare against
-     * @param sentences      the list of sentences to search through
-     * @param threshold      the minimum similarity score required (in the range [0,1])
-     * @return a list of similar sentences
-     */
-    public List<String> findSimilarSentences(String searchSentence, List<String> sentences, double threshold) {
-        return sentences.stream()
-                .filter(sentence -> lig3.sim(searchSentence, sentence) >= threshold)
-                .collect(Collectors.toList());
+    @Override
+    public String getAlgorithmName() {
+        return "LIG3";
     }
 
     @Override
     public List<String> search(String searchTerm, List<String> sentences) {
-        return findSimilarSentences(searchTerm, sentences, 0.7);
+        return sentences.stream()
+                .filter(sentence -> lig3.sim(searchTerm, sentence) >= computeThreshold(searchTerm))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Map.Entry<String, Double>> searchWithScores(String searchTerm, List<String> sentences) {
+        return sentences.stream()
+                .map(sentence -> Map.entry(sentence, lig3.sim(searchTerm, sentence)))
+                .filter(entry -> entry.getValue() >= 0.5) // Filter out weak matches
+                .sorted(Map.Entry.<String, Double>comparingByValue().reversed()) // Sort by confidence
+                .collect(Collectors.toList());
+    }
+
+    private double computeThreshold(String searchTerm) {
+        return Math.max(0.5, 1.0 - (searchTerm.length() * 0.02)); // Adaptive threshold
     }
 }

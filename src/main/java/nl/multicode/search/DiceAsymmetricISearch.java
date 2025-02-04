@@ -2,41 +2,44 @@ package nl.multicode.search;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import nl.multicode.match.DiceAsymmetricI;
-
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * DiceAsymmetricIDistanceSearch uses Dice's Asymmetric I distance to find similar sentences.
+ * DiceAsymmetricISearch uses Dice's Asymmetric I similarity to find similar sentences.
  */
 @ApplicationScoped
 public class DiceAsymmetricISearch implements Search {
 
     private final DiceAsymmetricI diceDistance;
 
-    /**
-     * Constructs a DiceAsymmetricIDistanceSearch instance with default parameters.
-     */
-    public DiceAsymmetricISearch() {
-        this.diceDistance = new DiceAsymmetricI();
+    public DiceAsymmetricISearch(DiceAsymmetricI diceDistance) {
+        this.diceDistance = diceDistance;
     }
 
-    /**
-     * Finds sentences in the given list that have a similarity greater than or equal to the threshold.
-     *
-     * @param searchSentence the sentence to compare against
-     * @param sentences      the list of sentences to search through
-     * @param threshold      the minimum similarity score required (in the range [0,1])
-     * @return a list of similar sentences
-     */
-    public List<String> findSimilarSentences(String searchSentence, List<String> sentences, double threshold) {
-        return sentences.stream()
-                .filter(sentence -> diceDistance.sim(searchSentence, sentence) >= threshold)
-                .collect(Collectors.toList());
+    @Override
+    public String getAlgorithmName() {
+        return "DiceAsymmetricI";
     }
 
     @Override
     public List<String> search(String searchTerm, List<String> sentences) {
-        return findSimilarSentences(searchTerm, sentences, 0.5);
+        return sentences.stream()
+                .filter(sentence -> diceDistance.computeSimilarity(searchTerm, sentence) >= computeThreshold(searchTerm))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Map.Entry<String, Double>> searchWithScores(String searchTerm, List<String> sentences) {
+        return sentences.stream()
+                .map(sentence -> Map.entry(sentence, diceDistance.computeSimilarity(searchTerm, sentence)))
+                .filter(entry -> entry.getValue() > 0.3) // Ignore low-confidence matches
+                .sorted(Map.Entry.<String, Double>comparingByValue().reversed()) // Sort by highest similarity
+                .collect(Collectors.toList());
+    }
+
+    private double computeThreshold(String searchTerm) {
+        return Math.max(0.3, 1.0 - (searchTerm.length() * 0.01)); // Adaptive threshold
     }
 }

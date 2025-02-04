@@ -3,31 +3,7 @@ package nl.multicode.match;
 import jakarta.enterprise.context.ApplicationScoped;
 
 /**
- * IterativeSubString implements the Iterative-SubString (I-Sub) correlation.
- * <p>
- * The I-Sub correlation is based on the algorithm described by Stoilos (2005)
- * and is a port of the original Java implementation.
- * </p>
- *
- * <p>
- * If <code>normalizeStrings</code> is enabled then the input strings are converted
- * to lower-case and the characters '.', '_' and space are removed.
- * </p>
- *
- * <p>
- * The correlation is computed as:
- * <br>
- *   corr(src, tar) = commonality - dissimilarity + winklerImprovement
- * <br>
- * where:
- * <ul>
- *   <li>commonality = 2 * common / (|src| + |tar|)</li>
- *   <li>winklerImprovement is a bonus based on the common prefix</li>
- *   <li>dissimilarity is computed via a Hamacher product of the unmatched proportions.</li>
- * </ul>
- * Finally, similarity is computed as: <code>sim(src, tar) = (corr(src, tar) + 1) / 2</code>
- * so that similarity lies in the range [0, 1].
- * </p>
+ * Implements Iterative-SubString (I-Sub) similarity based on Stoilos (2005).
  */
 @ApplicationScoped
 public class IterativeSubString {
@@ -35,153 +11,110 @@ public class IterativeSubString {
     private final double hamacher;
     private final boolean normalizeStrings;
 
-    /**
-     * Constructs an IterativeSubString instance with default parameters:
-     * hamacher = 0.6 and normalization disabled.
-     */
     public IterativeSubString() {
         this(0.6, false);
     }
 
-    /**
-     * Constructs an IterativeSubString instance with the given parameters.
-     *
-     * @param hamacher         the constant factor for the Hamacher product
-     * @param normalizeStrings if true, the input strings are normalized (lower-cased and stripped of "._ ")
-     */
     public IterativeSubString(double hamacher, boolean normalizeStrings) {
         this.hamacher = hamacher;
         this.normalizeStrings = normalizeStrings;
     }
 
     /**
-     * Returns the I-Sub correlation between two strings.
+     * Computes the I-Sub similarity between two strings.
      *
-     * @param src the source string
-     * @param tar the target string
-     * @return the correlation value (which may be negative)
-     */
-    public double corr(String src, String tar) {
-        // Keep original inputs for winkler improvement.
-        String inputSrc = src;
-        String inputTar = tar;
-
-        if (normalizeStrings) {
-            src = src.toLowerCase();
-            tar = tar.toLowerCase();
-            for (char ch : "._ ".toCharArray()) {
-                src = src.replace(String.valueOf(ch), "");
-                tar = tar.replace(String.valueOf(ch), "");
-            }
-        }
-
-        int srcLen = src.length();
-        int tarLen = tar.length();
-
-        if (srcLen == 0 && tarLen == 0) {
-            return 1.0;
-        }
-        if (srcLen == 0 || tarLen == 0) {
-            return -1.0;
-        }
-
-        int common = 0;
-        int best = 2; // initial threshold for a match in the inner loop
-
-        // Work on mutable copies of the strings.
-        String currentSrc = src;
-        String currentTar = tar;
-
-        // Loop until one string is exhausted or no block of length > 2 can be found.
-        while (!currentSrc.isEmpty() && !currentTar.isEmpty() && best != 0) {
-            best = 0;
-            int ls = currentSrc.length();
-            int lt = currentTar.length();
-            int startSrc = 0, endSrc = 0, startTar = 0, endTar = 0;
-
-            // For each starting index i in currentSrc...
-            for (int i = 0; i < ls && ls - i > best; i++) {
-                int j = 0;
-                // While there is room in currentTar.
-                while (j < lt && lt - j > best) {
-                    int k = i;
-                    // Advance j until a matching character is found.
-                    while (j < lt && currentSrc.charAt(k) != currentTar.charAt(j)) {
-                        j++;
-                    }
-                    if (j < lt) {
-                        int p = j; // record the start in tar
-                        j++;
-                        k++;
-                        // Extend the matching block as long as characters match.
-                        while (j < lt && k < ls && currentSrc.charAt(k) == currentTar.charAt(j)) {
-                            j++;
-                            k++;
-                        }
-                        if (k - i > best) {
-                            best = k - i;
-                            startSrc = i;
-                            endSrc = k;
-                            startTar = p;
-                            endTar = j;
-                        }
-                    } else {
-                        break;
-                    }
-                }
-            }
-            // Remove the matching block from both strings.
-            currentSrc = currentSrc.substring(0, startSrc) + currentSrc.substring(endSrc);
-            currentTar = currentTar.substring(0, startTar) + currentTar.substring(endTar);
-            if (best > 2) {
-                common += best;
-            } else {
-                best = 0;
-            }
-        }
-
-        double commonality = 2.0 * common / (srcLen + tarLen);
-        double winklerImprovement = computeWinklerImprovement(inputSrc, inputTar, commonality);
-        double unmatchedSrc = Math.max(srcLen - common, 0) / (double) srcLen;
-        double unmatchedTar = Math.max(tarLen - common, 0) / (double) tarLen;
-        double unmatchedProd = unmatchedSrc * unmatchedTar;
-        double dissimilarity = unmatchedProd /
-                (hamacher + (1 - hamacher) * (unmatchedSrc + unmatchedTar - unmatchedProd));
-
-        return commonality - dissimilarity + winklerImprovement;
-    }
-
-    /**
-     * Returns the I-Sub similarity between two strings.
-     * The similarity is defined as (corr(src, tar) + 1) / 2.
-     *
-     * @param src the source string
-     * @param tar the target string
-     * @return the similarity score in the range [0, 1]
+     * @param src The source string.
+     * @param tar The target string.
+     * @return The similarity score in the range [0,1].
      */
     public double sim(String src, String tar) {
         return (corr(src, tar) + 1.0) / 2.0;
     }
 
     /**
-     * Computes the Winkler improvement bonus.
+     * Computes the I-Sub correlation between two strings.
      *
-     * @param src         the original source string
-     * @param tar         the original target string
-     * @param commonality the computed commonality value
-     * @return the Winkler improvement value
+     * @param src The source string.
+     * @param tar The target string.
+     * @return The correlation value (which may be negative).
      */
-    private double computeWinklerImprovement(String src, String tar, double commonality) {
+    private double corr(String src, String tar) {
+        src = preprocess(src);
+        tar = preprocess(tar);
+
+        int srcLen = src.length();
+        int tarLen = tar.length();
+        if (srcLen == 0 || tarLen == 0) return -1.0;
+
+        int common = computeCommonCharacters(src, tar);
+        double commonality = (2.0 * common) / (srcLen + tarLen);
+        double winklerBonus = computeWinklerBonus(src, tar, commonality);
+        double dissimilarity = computeDissimilarity(srcLen, tarLen, common);
+
+        return commonality - dissimilarity + winklerBonus;
+    }
+
+    private String preprocess(String str) {
+        if (!normalizeStrings) return str;
+        return str.toLowerCase().replaceAll("[._ ]", "");
+    }
+
+    private int computeCommonCharacters(String src, String tar) {
+        int common = 0;
+        int bestMatch = 2;
+        String tempSrc = src, tempTar = tar;
+
+        while (!tempSrc.isEmpty() && !tempTar.isEmpty() && bestMatch > 0) {
+            bestMatch = 0;
+            int srcLength = tempSrc.length(), tarLength = tempTar.length();
+            int startSrc = 0, startTar = 0, endSrc = 0, endTar = 0;
+
+            for (int i = 0; i < srcLength && srcLength - i > bestMatch; i++) {
+                for (int j = 0; j < tarLength && tarLength - j > bestMatch; j++) {
+                    int k = i;
+                    while (j < tarLength && tempSrc.charAt(k) != tempTar.charAt(j)) j++;
+                    if (j < tarLength) {
+                        int p = j;
+                        j++;
+                        k++;
+                        while (j < tarLength && k < srcLength && tempSrc.charAt(k) == tempTar.charAt(j)) {
+                            j++;
+                            k++;
+                        }
+                        if (k - i > bestMatch) {
+                            bestMatch = k - i;
+                            startSrc = i;
+                            endSrc = k;
+                            startTar = p;
+                            endTar = j;
+                        }
+                    }
+                }
+            }
+
+            tempSrc = tempSrc.substring(0, startSrc) + tempSrc.substring(endSrc);
+            tempTar = tempTar.substring(0, startTar) + tempTar.substring(endTar);
+            if (bestMatch > 2) common += bestMatch;
+        }
+
+        return common;
+    }
+
+    private double computeDissimilarity(int srcLen, int tarLen, int common) {
+        double unmatchedSrc = Math.max(srcLen - common, 0) / (double) srcLen;
+        double unmatchedTar = Math.max(tarLen - common, 0) / (double) tarLen;
+        double unmatchedProd = unmatchedSrc * unmatchedTar;
+
+        return unmatchedProd / (hamacher + (1 - hamacher) * (unmatchedSrc + unmatchedTar - unmatchedProd));
+    }
+
+    private double computeWinklerBonus(String src, String tar, double commonality) {
         int prefix = 0;
         int minLen = Math.min(src.length(), tar.length());
         for (int i = 0; i < minLen; i++) {
-            if (src.charAt(i) != tar.charAt(i)) {
-                break;
-            }
+            if (src.charAt(i) != tar.charAt(i)) break;
             prefix++;
         }
-        // Only up to 4 characters are considered.
-        double bonus = Math.min(4.0, prefix) * 0.1 * (1.0 - commonality);
-        return bonus;
+        return Math.min(4.0, prefix) * 0.1 * (1.0 - commonality);
     }
 }
