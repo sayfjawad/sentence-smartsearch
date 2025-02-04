@@ -25,7 +25,7 @@ class BaulieuXIIISearchTest {
      */
     @Test
     void testAlbertHein() {
-        BaulieuXIIISearch search = new BaulieuXIIISearch(new BaulieuXIII());
+        BaulieuXIIISearch search = new BaulieuXIIISearch();
 
         String searchSentence = "Albert Heijn";
         List<String> sentences = Arrays.asList(

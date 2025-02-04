@@ -1,5 +1,7 @@
 package nl.multicode.match;
 
+import jakarta.enterprise.context.ApplicationScoped;
+
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
@@ -15,6 +17,7 @@ import java.util.stream.Collectors;
  * where "sorted(src)" refers to the source string's tokens sorted alphabetically.
  * </p>
  */
+@ApplicationScoped
 public class FuzzyWuzzyTokenSort {
 
     /**

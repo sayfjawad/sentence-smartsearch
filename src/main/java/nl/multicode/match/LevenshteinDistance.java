@@ -1,8 +1,11 @@
 package nl.multicode.match;
 
+import jakarta.enterprise.context.ApplicationScoped;
+
 /**
  * LevenshteinDistance calculates the edit distance between two strings.
  */
+@ApplicationScoped
 public class LevenshteinDistance {
 
     /**

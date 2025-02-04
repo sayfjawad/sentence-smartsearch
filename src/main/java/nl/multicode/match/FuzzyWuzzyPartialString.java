@@ -1,5 +1,7 @@
 package nl.multicode.match;
 
+import jakarta.enterprise.context.ApplicationScoped;
+
 import java.util.stream.IntStream;
 
 /**
@@ -14,6 +16,7 @@ import java.util.stream.IntStream;
  * where "substring" refers to all possible substrings of the larger string that match the length of the smaller one.
  * </p>
  */
+@ApplicationScoped
 public class FuzzyWuzzyPartialString {
 
     /**

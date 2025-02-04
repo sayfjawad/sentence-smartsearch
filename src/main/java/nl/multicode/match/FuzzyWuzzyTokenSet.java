@@ -1,5 +1,7 @@
 package nl.multicode.match;
 
+import jakarta.enterprise.context.ApplicationScoped;
+
 import java.util.Arrays;
 import java.util.Set;
 import java.util.TreeSet;
@@ -15,6 +17,7 @@ import java.util.stream.Collectors;
  * where "intersection" refers to the common tokens between the two sets.
  * </p>
  */
+@ApplicationScoped
 public class FuzzyWuzzyTokenSet {
 
     /**

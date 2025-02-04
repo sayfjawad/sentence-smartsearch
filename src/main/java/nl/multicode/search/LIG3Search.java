@@ -1,6 +1,7 @@
 package nl.multicode.search;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import nl.multicode.match.LIG3;
 
 import java.util.List;
@@ -11,14 +12,10 @@ import java.util.stream.Collectors;
  */
 @ApplicationScoped
 public class LIG3Search implements Search {
-    private final LIG3 lig3;
 
-    /**
-     * Constructs a LIG3DistanceSearch instance.
-     */
-    public LIG3Search() {
-        this.lig3 = new LIG3();
-    }
+    @Inject
+    LIG3 lig3;
+
 
     /**
      * Finds sentences in the given list that have a similarity greater than or equal to the threshold.

@@ -1,5 +1,7 @@
 package nl.multicode.match;
 
+import jakarta.enterprise.context.ApplicationScoped;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -13,6 +15,7 @@ import java.util.Set;
  * between characters in the same phonetic group.
  * </p>
  */
+@ApplicationScoped
 public class Editex {
 
     private static final int MATCH_COST = 0;

@@ -1,6 +1,7 @@
 package nl.multicode.search;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import nl.multicode.match.BaulieuXIII;
 
 import java.util.List;
@@ -12,14 +13,9 @@ import java.util.stream.Collectors;
 @ApplicationScoped
 public class BaulieuXIIISearch implements Search {
 
-    private final BaulieuXIII baulieuXIII;
+    @Inject
+    BaulieuXIII baulieuXIII;
 
-    /**
-     * Constructor met een externe BaulieuXIIIDistance-instantie (voor testbaarheid).
-     */
-    public BaulieuXIIISearch(BaulieuXIII baulieuXIII) {
-        this.baulieuXIII = baulieuXIII;
-    }
 
     /**
      * Vindt zinnen in de lijst die vergelijkbaar zijn met de zoekzin.

@@ -14,7 +14,6 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -42,17 +41,13 @@ public class SearchController {
             content = @Content(mediaType = MediaType.APPLICATION_JSON,
                     schema = @Schema(implementation = Map.class))
     )
-    public Map<String, String> searchWithQueryParams(
+    public Map<String, List<String>> searchWithQueryParams(
             @Parameter(description = "Search term", example = "Albert Heijn")
             @QueryParam("search") String search,
-
-            @Parameter(description = "Comma-separated list of sentences", example = "Albert Heijn store, Action, Blokker")
+            @Parameter(description = "Comma-separated list of sentences", example = "We went to the Albert Heijn store, and got som Aubergine and Heineken brew!")
             @QueryParam("sentences") String sentences) {
 
-        // Convert comma-separated string into a list
-        List<String> sentenceList = Arrays.asList(sentences.split(","));
-
         // Simulating a response
-        return Map.of("message", "Search executed for: " + search, "sentences", sentenceList.toString());
+        return smartSearchService.performSearch(search, sentences);
     }
 }

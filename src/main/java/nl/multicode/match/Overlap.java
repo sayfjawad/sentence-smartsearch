@@ -1,5 +1,7 @@
 package nl.multicode.match;
 
+import jakarta.enterprise.context.ApplicationScoped;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -12,6 +14,7 @@ import java.util.Set;
  * </pre>
  * waar X en Y de getokeniseerde sets van tekens van de invoerstrings zijn.
  */
+@ApplicationScoped
 public class Overlap {
 
     /**

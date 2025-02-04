@@ -1,13 +1,16 @@
 package nl.multicode.match;
 
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import org.apache.commons.codec.language.DoubleMetaphone;
 
 /**
  * Implements the Double Metaphone algorithm for phonetic similarity.
  */
+@ApplicationScoped
 public class DoubleMetaphoneEncoder {
 
-    private final DoubleMetaphone doubleMetaphone;
+    @Inject DoubleMetaphone doubleMetaphone;
 
     /**
      * Constructs a DoubleMetaphoneEncoder instance.

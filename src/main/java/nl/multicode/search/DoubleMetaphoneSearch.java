@@ -1,6 +1,7 @@
 package nl.multicode.search;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import nl.multicode.match.DoubleMetaphoneEncoder;
 
 import java.util.List;
@@ -12,14 +13,9 @@ import java.util.stream.Collectors;
 @ApplicationScoped
 public class DoubleMetaphoneSearch implements Search {
 
-    private final DoubleMetaphoneEncoder encoder;
+    @Inject
+    DoubleMetaphoneEncoder encoder;
 
-    /**
-     * Constructs a DoubleMetaphoneSearch instance.
-     */
-    public DoubleMetaphoneSearch() {
-        this.encoder = new DoubleMetaphoneEncoder();
-    }
 
     /**
      * Finds sentences in the list with a matching Double Metaphone encoding.

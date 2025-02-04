@@ -1,11 +1,14 @@
 package nl.multicode.match;
 
+import jakarta.enterprise.context.ApplicationScoped;
+
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Implementeert de Bag Distance voor het vergelijken van strings.
  */
+@ApplicationScoped
 public class Bag {
 
     /**
