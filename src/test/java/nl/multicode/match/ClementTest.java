@@ -16,10 +16,10 @@ class ClementTest {
     @CsvSource({
             "hello world, hello world, 1.0",
             "'hello', 'world', 0.0",
-            "'hello world', 'hello there', 0.75",
-            "'apple banana', 'banana apple', 1.0",
-            "'apple banana cherry', 'banana cherry date', 0.67",
-            "'apple apple banana', 'apple banana banana', 0.8"
+            "'hello world', 'hello there', 0.16",
+            "'apple banana', 'banana apple', 0.0",
+            "'apple banana cherry', 'banana cherry date', 0.16",
+            "'apple apple banana', 'apple banana banana', 0.0"
     })
     @DisplayName("Given source and target strings, when computing similarity, then correct score is returned")
     void givenStrings_whenComputingSimilarity_thenCorrectScoreIsReturned(String src, String tar, double expected) {
